@@ -1,17 +1,12 @@
 <template>
-  <Menu
-    mode="horizontal"
-    theme="dark"
-    :selectable="false"
-    @click="$emit('click', $event)"
-  >
+  <Menu mode="horizontal" theme="dark" active-name="" @on-select="$emit('select', $event)">
     <MenuItem name="1">
-      <Icon custom="iconfont icon-folder-add-outline" />
+      <Icon custom="iconfont icon-appstoreadd" />
       <span>新建</span>
     </MenuItem>
-    <Menu-item name="2" style="width: 50%;">
-      <Input search placeholder="输入搜索关键字" @search="$emit('search', $event)" enter-button />
-    </Menu-item>
+    <MenuItem name="2" style="width: 50%; margin-top: 15px;">
+      <Input search placeholder="输入搜索关键字" @on-search="$emit('search', $event)" enter-button />
+    </MenuItem>
   </Menu>
 </template>
 
@@ -22,5 +17,4 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 export default class Toolbar extends Vue {}
 </script>
 
-<style>
-</style>
+<style></style>
