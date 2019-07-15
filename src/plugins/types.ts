@@ -1,5 +1,10 @@
 import Vue from 'vue';
-import { Switch, Icon } from 'iview';
+import { Layout, Icon, Menu, MenuItem, Input } from 'iview';
 
-Vue.component(Switch.name, Switch);
-Vue.component(Icon.name, Icon);
+function component(...cs: any[]) {
+  for (const c of cs) {
+    Vue.component(c.name, c);
+  }
+}
+
+component(Layout, Icon, Menu, MenuItem, Input);
