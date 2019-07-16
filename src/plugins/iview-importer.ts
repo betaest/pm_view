@@ -15,19 +15,17 @@ import {
   Row,
   Col,
   Upload,
-  Select,
-  Scroll,
-  Card,
+  Notice,
 } from 'iview';
 
-function component(cs: Record<string, any>) {
+function install(cs: Record<string, any>) {
   for (const name in cs)
     if (cs.hasOwnProperty(name)) {
       Vue.component(name, cs[name]);
     }
 }
 
-component({
+install({
   Layout,
   Icon,
   Menu,
@@ -43,7 +41,6 @@ component({
   Row,
   Col,
   Upload,
-  Select,
-  Scroll,
-  Card,
 });
+
+Vue.prototype.$Notice = Notice;

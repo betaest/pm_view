@@ -4,7 +4,7 @@
       <Row :gutter="32">
         <Col span="24">
           <FormItem label="项目名称" :rules="{ required: true, message: '项目名称必须输入' }" prop="name">
-            <Input v-model="datas.name" placeholder="请输入名称" />
+            <Input v-model="datas.name" placeholder="请输入名称" :disabled="saving" />
           </FormItem>
         </Col>
       </Row>
@@ -20,6 +20,7 @@
               type="textarea"
               placeholder="请输入项目描述"
               :autosize="{minRows: 2, maxRows: 6}"
+              :disabled="saving"
             />
           </FormItem>
         </Col>
@@ -27,12 +28,12 @@
       <Row :gutter="32">
         <Col span="12">
           <FormItem label="发起部门" :rules="{ required: true, message: '发起部门' }" prop="department">
-            <Input v-model="datas.department" placeholder="请输入发起部门" />
+            <Input v-model="datas.department" placeholder="请输入发起部门" :disabled="saving" />
           </FormItem>
         </Col>
         <Col span="12">
           <FormItem label="发起人" :rules="{ required: true, message: '发起人' }" prop="handler">
-            <Input v-model="datas.handler" placeholder="请输入发起人" />
+            <Input v-model="datas.handler" placeholder="请输入发起人" :disabled="saving" />
           </FormItem>
         </Col>
       </Row>
@@ -40,13 +41,26 @@
         <Col span="24">
           <FormItem label="附件">
             <template v-if="datas.attachments && datas.attachments.length !== 0">
-              <Card v-for="(item, i) of datas.attachments" class="upload-list">
-                <Icon custom="iconfont icon-xls" size="52" />
-                <p class="upload-item-desc">xxxxxxxxxxxxxxxxxxxxxx.xls</p>
+              <div
+                v-for="(item, i) of datas.attachments"
+                class="upload-list"
+                :key="`attachment-${i}`"
+              >
+                <Icon :custom="`iconfont ${getIcon(item.name)}`" size="52" />
+                <p class="upload-item-desc">{{ item.name }}</p>
                 <div class="upload-list-cover">
                   <Icon custom="iconfont icon-delete" />
                 </div>
-              </Card>
+              </div>
+            </template>
+            <template v-if="upload && upload.length !== 0">
+              <div v-for="(item, i) of upload" class="upload-list" :key="`upload-${i}`">
+                <Icon :custom="`iconfont ${getIcon(item.name)}`" size="52" />
+                <p class="upload-item-desc">{{ item.name }}</p>
+                <div class="upload-list-cover">
+                  <Icon custom="iconfont icon-delete" />
+                </div>
+              </div>
             </template>
 
             <Upload
@@ -56,6 +70,7 @@
               :show-upload-list="false"
               action="//jsonplaceholder.typicode.com/posts/"
               class="upload-list"
+              :disabled="saving"
             >
               <Icon custom="iconfont icon-plus" size="52" />
             </Upload>
@@ -64,8 +79,18 @@
       </Row>
     </Form>
     <div class="drawer-footer">
-      <Button style="margin-right: 8px" @click="show = false" custom-icon="iconfont icon-close">取消</Button>
-      <Button type="primary" @click="show = false" custom-icon="iconfont icon-save">保存</Button>
+      <Button
+        style="margin-right: 8px"
+        @click="$emit('cancel', this)"
+        custom-icon="iconfont icon-close"
+        :disabled="saving"
+      >取消</Button>
+      <Button
+        type="primary"
+        @click="saving=true; $emit('save', datas, upload)"
+        custom-icon="iconfont icon-save"
+        :loading="saving"
+      >保存</Button>
     </div>
   </Drawer>
 </template>
@@ -85,18 +110,44 @@ export default class Editor extends Vue {
   @Prop(String)
   private title!: string;
 
+  private saving = false;
+
+  private upload: File[] = [];
+
+  private static readonly FileExt = {
+    doc: ['xls', 'xlsx', 'doc', 'docx', 'ppt', 'pptx', 'pdf'],
+    image: ['png', 'jpg', 'jpeg', 'gif'],
+    zip: ['zip', 'rar', '7z'],
+  };
+
   private get datas(): ProjectInfo {
     return JSON.parse(JSON.stringify(this.items));
   }
 
+  private getIcon(name: string): string {
+    const ext = name.substring(name.lastIndexOf('.') + 1).toLowerCase();
+    const type = Editor.FileExt.doc.includes(ext)
+      ? ext
+      : Editor.FileExt.image.includes(ext)
+      ? 'image'
+      : Editor.FileExt.zip.includes(ext)
+      ? 'zip'
+      : 'file';
+
+    return `icon-${type}`;
+  }
+
   private beforeUpload(file: File) {
-    console.log(file);
+    this.upload.push(file);
+
     return false;
   }
 }
 </script>
 
 <style lang="scss">
+$width: 100px;
+
 .drawer-footer {
   width: 100%;
   position: absolute;
@@ -118,25 +169,33 @@ export default class Editor extends Vue {
 
 .upload-list {
   display: inline-block;
-  width: 100px;
-  height: 100px;
+  width: $width;
+  height: $width;
   text-align: center;
   overflow: hidden;
   background: #fff;
   position: relative;
-  margin-right: 4px;
+  margin: 0 0 6px 6px;
+  vertical-align: middle;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
 
   &:hover .upload-list-cover {
     display: block;
   }
 
+  i {
+    margin: 10px 0 0;
+  }
+
   .upload-item-desc {
-    width: 80px;
+    width: $width;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     display: block;
-    margin: 0;
+    text-align: center;
+    margin: 5px 0 0;
   }
 }
 
@@ -147,7 +206,7 @@ export default class Editor extends Vue {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.7);
 
   i {
     color: #fff;

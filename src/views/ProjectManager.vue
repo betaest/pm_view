@@ -5,16 +5,17 @@
         <Toolbar @select="select" @search="search" />
       </Header>
       <Content>
-        <DataTable ref="dt" @edit="edit" />
+        <DataTable ref="dt" @edit="editDataTable" />
       </Content>
     </Layout>
-    <Editor :show="showEditor" :items="data" :title="editorTitle" />
+    <Editor :show="showEditor" :items="data" :title="editorTitle" @save="saveEditor" />
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import { ProjectInfo } from '@/types/projs';
+
 import Toolbar from '@/components/Toolbar.vue';
 import DataTable from '@/components/DataTable.vue';
 import Editor from '@/components/Editor.vue';
@@ -45,10 +46,19 @@ export default class ProjectManager extends Vue {
     (this.$refs.dt as DataTable).get('Hello');
   }
 
-  public edit(dt: ProjectInfo) {
+  public editDataTable(dt: ProjectInfo) {
     this.editorTitle = '修改项目';
     this.data = dt;
     this.showEditor = true;
+  }
+
+  public saveEditor(data: ProjectInfo, files: File[]) {
+    this.$Notice.info({
+      title: '通知',
+      desc: '正在保存中',
+      name: 'savingNotice'
+    });
+    new Promise(r => setTimeout(() => (this.showEditor = false), 1000));
   }
 }
 </script>
