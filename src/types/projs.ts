@@ -1,6 +1,7 @@
-interface AttachmentInfo {
+export interface AttachmentInfo {
   id: number;
   name: string;
+  url: string;
 }
 export interface ProjectInfo {
   id: number;
@@ -11,6 +12,10 @@ export interface ProjectInfo {
   operator: string;
   operationDateTime: Date;
   privileges?: string[];
-  attachments?: Array<AttachmentInfo>;
-  url?: string;
+  attachments: Array<AttachmentInfo | File>;
+}
+
+export interface ProjectInfos {
+  total: number;
+  rows: Array<ProjectInfo>;
 }

@@ -5,16 +5,22 @@
         <Toolbar @select="select" @search="search" />
       </Header>
       <Content>
-        <DataTable ref="dt" @edit="editDataTable" />
+        <DataTable ref="dt" :keyword="keyword" @edit="editDataTable" />
       </Content>
     </Layout>
-    <Editor :show="showEditor" :items="data" :title="editorTitle" @save="saveEditor" />
+    <Editor
+      :show="showEditor"
+      :items="data"
+      :title="editorTitle"
+      @save="saveEditor"
+      @cancel="cancelEditor"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
-import { ProjectInfo } from '@/types/projs';
+import { Vue, Component, Prop, Ref } from 'vue-property-decorator';
+import { ProjectInfo, AttachmentInfo } from '@/types/projs';
 
 import Toolbar from '@/components/Toolbar.vue';
 import DataTable from '@/components/DataTable.vue';
@@ -22,7 +28,11 @@ import Editor from '@/components/Editor.vue';
 
 @Component({ components: { Toolbar, DataTable, Editor } })
 export default class ProjectManager extends Vue {
+  @Ref()
+  private readonly dt!: DataTable;
+
   private showEditor = false;
+  private keyword = '';
 
   private data: ProjectInfo = {
     id: 0,
@@ -32,33 +42,43 @@ export default class ProjectManager extends Vue {
     department: '',
     operator: '',
     operationDateTime: new Date(),
+    attachments: [],
   };
 
   private editorTitle = '';
 
-  public select(which: string) {
+  private select(which: string) {
     if (which === '1') {
+      this.data = {
+        id: 0,
+        name: '',
+        description: '',
+        handler: '',
+        department: '',
+        operator: '',
+        operationDateTime: new Date(),
+        attachments: [],
+      };
       this.showEditor = true;
     }
   }
 
-  public search(what: string) {
-    (this.$refs.dt as DataTable).get('Hello');
+  private search(what: string) {
+    this.keyword = what;
   }
 
-  public editDataTable(dt: ProjectInfo) {
+  private editDataTable(dt: ProjectInfo) {
     this.editorTitle = '修改项目';
-    this.data = dt;
+    this.data = JSON.parse(JSON.stringify(dt));
     this.showEditor = true;
   }
 
-  public saveEditor(data: ProjectInfo, files: File[]) {
-    this.$Notice.info({
-      title: '通知',
-      desc: '正在保存中',
-      name: 'savingNotice'
-    });
+  private saveEditor(data: ProjectInfo) {
     new Promise(r => setTimeout(() => (this.showEditor = false), 1000));
+  }
+
+  private cancelEditor() {
+    this.showEditor = false;
   }
 }
 </script>

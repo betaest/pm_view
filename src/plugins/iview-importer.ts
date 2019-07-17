@@ -16,6 +16,8 @@ import {
   Col,
   Upload,
   Notice,
+  Spin,
+  Page,
 } from 'iview';
 
 function install(cs: Record<string, any>) {
@@ -41,6 +43,9 @@ install({
   Row,
   Col,
   Upload,
+  Spin,
+  Page,
 });
 
 Vue.prototype.$Notice = Notice;
+Vue.prototype.$Spin = Spin;
