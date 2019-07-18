@@ -10,7 +10,7 @@ export interface ProjectInfo {
   handler: string;
   department: string;
   operator: string;
-  operationDateTime: Date;
+  operateDateTime: string;
   privileges?: string[];
   attachments: Array<AttachmentInfo | File>;
 }
