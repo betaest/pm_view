@@ -13,19 +13,24 @@
       @on-sort-change="changeSort"
     >
       <template #operation="{row}">
-        <ButtonGroup shape="circle" style="position: static" size="small">
-          <Tooltip content="下载" v-if="row.attachments">
-            <Button custom-icon="iconfont icon-download" type="primary" @click="$emit('download', row)" />
-          </Tooltip>
+        <Tooltip content="下载" v-if="row.attachments">
+          <Button
+            shape="circle"
+            custom-icon="iconfont icon-download"
+            type="primary"
+            @click="$emit('download', row)"
+          />
+        </Tooltip>
 
-          <Tooltip content="编辑" v-if="(row.privileges || []).includes('put')">
-            <Button custom-icon="iconfont icon-edit" @click="$emit('edit', row)" />
-          </Tooltip>
+        <Tooltip content="编辑" v-if="editable(row)">
+          <Button shape="circle" custom-icon="iconfont icon-edit" @click="$emit('edit', row)" />
+        </Tooltip>
 
-          <Tooltip content="删除" v-if="(row.privileges || []).includes('delete')">
-            <Button custom-icon="iconfont icon-delete" type="error" @click="$emit('delete', row.id)" />
-          </Tooltip>
-        </ButtonGroup>
+        <Tooltip content="删除" v-if="editable(row)">
+          <Poptip confirm title="你确认删除这个项目吗？" placement="left" @on-ok="remove(row.id)">
+            <Button shape="circle" custom-icon="iconfont icon-delete" type="error" />
+          </Poptip>
+        </Tooltip>
       </template>
     </Table>
     <div style="margin: 10px;overflow: hidden">
@@ -47,9 +52,9 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-import { ProjectInfo } from '@/types/projs';
+import { ProjectInfo } from '@/types/project';
+import { Project } from '@/utils/data';
 import { CreateElement } from 'vue';
-import { get } from '@/utils/data';
 
 type OrderType = 'asc' | 'desc' | 'normal';
 
@@ -147,11 +152,15 @@ export default class DataTable extends Vue {
     await this.get();
   }
 
+  private editable(row: ProjectInfo): boolean {
+    return row.operator === sessionStorage.getItem('name');
+  }
+
   private async get() {
     this.loading = true;
 
     try {
-      const data = await get(this.page, this.pageSize, this.sorter, this.order, this.keyword);
+      const data = await Project.get(this.page, this.pageSize, this.sorter, this.order, this.keyword);
 
       this.total = data.total;
       this.data = data.rows;
@@ -165,23 +174,34 @@ export default class DataTable extends Vue {
       });
     }
   }
+
+  private async remove(i: number) {
+    this.loading = true;
+
+    try {
+      await Project.delete(i);
+
+      await this.get();
+
+      this.loading = false;
+    } catch (e) {
+      this.loading = false;
+
+      this.$Notice.error({
+        title: '删除数据',
+        desc: e.message,
+      });
+    }
+  }
 }
 </script>
 
 <style lang="scss">
-.ivu-btn-group:not(.ivu-btn-group-vertical) > .ivu-tooltip {
-  &:first-child:not(:last-child) .ivu-btn {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-  }
+.ivu-tooltip-rel {
+  position: static;
+}
 
-  &:last-child:not(:first-child) .ivu-btn {
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-  }
-
-  &:not(:first-child):not(:last-child) .ivu-btn {
-    border-radius: 0;
-  }
+.ivu-btn-circle {
+  margin-right: 5px;
 }
 </style>

@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Ref } from 'vue-property-decorator';
-import { ProjectInfo, AttachmentInfo } from '@/types/projs';
+import { ProjectInfo, AttachmentInfo } from '@/types/project';
 
 import Toolbar from '@/components/Toolbar.vue';
 import DataTable from '@/components/DataTable.vue';

@@ -18,6 +18,7 @@ import {
   Notice,
   Spin,
   Page,
+  Poptip,
 } from 'iview';
 
 function install(cs: Record<string, any>) {
@@ -45,6 +46,7 @@ install({
   Upload,
   Spin,
   Page,
+  Poptip,
 });
 
 Vue.prototype.$Notice = Notice;

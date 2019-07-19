@@ -15,7 +15,7 @@ export interface ProjectInfo {
   attachments: Array<AttachmentInfo | File>;
 }
 
-export interface ProjectInfos {
+export interface ProjectInfoReturn {
   total: number;
   rows: Array<ProjectInfo>;
 }

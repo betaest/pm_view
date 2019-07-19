@@ -77,8 +77,8 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Emit, Ref, Vue } from 'vue-property-decorator';
-import { ProjectInfo, AttachmentInfo } from '@/types/projs';
-import { download, remove } from '@/utils/data';
+import { ProjectInfo, AttachmentInfo } from '@/types/project';
+import { Attachment } from '@/utils/data';
 import { Form } from 'iview';
 
 @Component
@@ -145,13 +145,13 @@ export default class Editor extends Vue {
   }
 
   private download(item: AttachmentInfo) {
-    download(this.items.id, item.url);
+    Attachment.download(this.items.id, item.url);
   }
 
   private async remove(item: AttachmentInfo | File) {
     if ((item as any).url) {
       const a = item as AttachmentInfo;
-      const success = await remove(this.items.id, a.url);
+      const success = await Attachment.remove(this.items.id, a.url);
 
       if (success) {
       }
