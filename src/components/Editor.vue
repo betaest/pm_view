@@ -44,7 +44,11 @@
                 <Icon :custom="`iconfont ${getIcon(item.name)}`" size="52" />
                 <p class="upload-item-desc">{{ item.name }}</p>
                 <div class="upload-list-cover">
-                  <Icon custom="iconfont icon-download" @click.native="download(item)" v-if="item.url" />
+                  <Icon
+                    custom="iconfont icon-download"
+                    @click.native="download(item)"
+                    v-if="item.url"
+                  />
                   <Icon custom="iconfont icon-delete" @click.native="remove(item)" />
                 </div>
               </div>
@@ -92,10 +96,10 @@ export default class Editor extends Vue {
   @Prop(String)
   private readonly title!: string;
 
+  private saving: boolean = false;
+
   @Ref()
   private readonly form!: Form;
-
-  private saving = false;
 
   @Watch('show')
   private showChanged(val: boolean, oval: boolean) {
@@ -148,18 +152,21 @@ export default class Editor extends Vue {
     Attachment.download(this.items.id, item.url);
   }
 
+  private removeFromUi(item: AttachmentInfo | File) {
+    const idx = this.items.attachments.indexOf(item);
+
+    if (idx !== -1) this.items.attachments.splice(idx, 1);
+  }
+
   private async remove(item: AttachmentInfo | File) {
     if ((item as any).url) {
       const a = item as AttachmentInfo;
       const success = await Attachment.remove(this.items.id, a.url);
 
       if (success) {
+        this.removeFromUi(item);
       }
-    } else {
-      const idx = this.items.attachments.indexOf(item);
-
-      if (idx !== -1) this.items.attachments.splice(idx, 1);
-    }
+    } else this.removeFromUi(item);
   }
 }
 </script>

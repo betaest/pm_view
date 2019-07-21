@@ -1,6 +1,6 @@
 module.exports = {
   css: {
-    sourceMap: true,
+    sourceMap: false,
   },
   chainWebpack: c =>
     c.module

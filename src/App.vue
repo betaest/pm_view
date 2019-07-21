@@ -1,7 +1,7 @@
 <template>
   <Layout>
-    <Header>
-      <Menu mode="horizontal" theme="dark" active-name="home">
+    <Header style="display: none">
+      <Menu mode="horizontal" theme="dark" active-name="proj">
         <MenuItem name="home" to="/">Home</MenuItem>
         <MenuItem name="proj" to="/ProjectManager">项目管理</MenuItem>
       </Menu>

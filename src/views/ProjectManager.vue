@@ -8,13 +8,20 @@
         <DataTable ref="dt" :keyword="keyword" @edit="editDataTable" />
       </Content>
     </Layout>
-    <Editor :show="showEditor" :items="data" :title="editorTitle" @save="saveEditor" @cancel="cancelEditor" />
+    <Editor
+      :show="showEditor"
+      :items="data"
+      :title="editorTitle"
+      @save="saveEditor"
+      @cancel="cancelEditor"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Ref } from 'vue-property-decorator';
 import { ProjectInfo, AttachmentInfo } from '@/types/project';
+import { Project } from '@/utils/data';
 
 import Toolbar from '@/components/Toolbar.vue';
 import DataTable from '@/components/DataTable.vue';
@@ -64,10 +71,13 @@ export default class ProjectManager extends Vue {
   private editDataTable(dt: ProjectInfo) {
     this.editorTitle = '修改项目';
     this.data = JSON.parse(JSON.stringify(dt));
+
     this.showEditor = true;
   }
 
-  private saveEditor(data: ProjectInfo) {
+  private async saveEditor(data: ProjectInfo) {
+    const success = await Project.save(data);
+
     new Promise(r => setTimeout(() => (this.showEditor = false), 1000));
   }
 

@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { ProjectInfoReturn } from '@/types/project';
+import { ProjectInfoReturn, ProjectInfo, AttachmentInfo } from '@/types/project';
 import { VerifyReturn } from '@/types/verify';
-
 import Cookies from 'js-cookie';
 
 const Projects = 'https://localhost:5001/p';
@@ -19,28 +18,24 @@ export const Attachment = {
   },
 };
 
-// StaffCode,StaffName,IpAddr,YYYY-MM-DDTHH:mm:ss
-async function verify(token: string): Promise<VerifyReturn> {
-  const response = await axios.get(`${Verify}/Verify/${token}`);
-
-  return response.data ? (response.data as VerifyReturn) : { success: false, name: '', guid: '' };
-}
-
-async function verifyit() {
+async function verify() {
   let guid = Cookies.get('guid');
 
   if (!guid) {
     try {
       const token = location.search.substr(1);
-      const result = await verify(token);
+      const response = await axios.get(`${Verify}/${token}`);
 
-      if (result.success) {
+      if (response.data && (response.data as VerifyReturn).success) {
+        let result = response.data as VerifyReturn;
+
         sessionStorage.setItem('name', result.name);
         Cookies.set('guid', result.guid);
-        guid = result.guid;
-      } else {
-        throw new Error('验证登录失败，请重新登录');
+
+        return;
       }
+
+      throw 1;
     } catch (e) {
       throw new Error('验证登录失败，请重新登录');
     }
@@ -55,9 +50,9 @@ export const Project = {
     order: 'asc' | 'desc' | 'normal',
     keyword?: string
   ): Promise<ProjectInfoReturn> {
-    await verifyit();
+    await verify();
 
-    const response = await axios.get(`${Projects}/Project/${keyword}`, {
+    const response = await axios.get(`${Projects}/${keyword}`, {
       params: {
         page,
         pageSize,
@@ -69,9 +64,34 @@ export const Project = {
     return response.data as ProjectInfoReturn;
   },
   async delete(id: number) {
-    await verifyit();
+    await verify();
 
     await axios.delete(`${Projects}/Project/${id}`);
+  },
+  async save(info: ProjectInfo): Promise<boolean> {
+    const data = new FormData();
+
+    for (const name in info)
+      if (info.hasOwnProperty(name) && name !== 'attachments' && !name.startsWith('operate')) {
+        data.append(name, (info as any)[name].toString());
+      }
+
+    data.append('operator', sessionStorage.getItem('name')!);
+    data.append('operateDateTime', new Date().toJSON());
+
+    info.attachments
+      .filter(f => !(f as AttachmentInfo).url)
+      .forEach(f => data.append('file', f as File, (f as File).name));
+
+    if (info.id === 0) {
+      axios.post(`${Projects}`, data, {
+        withCredentials: true,
+      });
+    } else {
+      axios.put(`${Project}/Project`);
+    }
+
+    return true;
   },
 };
 

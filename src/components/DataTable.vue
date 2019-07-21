@@ -14,12 +14,7 @@
     >
       <template #operation="{row}">
         <Tooltip content="下载" v-if="row.attachments">
-          <Button
-            shape="circle"
-            custom-icon="iconfont icon-download"
-            type="primary"
-            @click="$emit('download', row)"
-          />
+          <Button shape="circle" custom-icon="iconfont icon-download" type="primary" @click="$emit('download', row)" />
         </Tooltip>
 
         <Tooltip content="编辑" v-if="editable(row)">
@@ -89,12 +84,10 @@ export default class DataTable extends Vue {
         title: '名称',
         key: 'name',
         sortable: true,
-        width: 150,
       },
       {
         title: '描述',
         key: 'description',
-        width: 500,
         ellipsis: true,
         tooltip: true,
       },
@@ -102,20 +95,17 @@ export default class DataTable extends Vue {
         title: '发起人',
         key: '$custom',
         sortable: true,
-        width: 150,
         render: (h: CreateElement, { row }: { row: ProjectInfo }) => h('span', `${row.department}-${row.handler}`),
       },
       {
         title: '录入人',
         key: 'operator',
-        width: 150,
         sortable: true,
       },
       {
         title: '发起时间',
         key: 'operateDateTime',
         sortable: true,
-        width: 150,
         render: (h: CreateElement, { row }: { row: ProjectInfo }) =>
           h('span', this.formatDateTime(new Date(row.operateDateTime))),
       },
@@ -203,5 +193,18 @@ export default class DataTable extends Vue {
 
 .ivu-btn-circle {
   margin-right: 5px;
+}
+
+$widths: 15%, 30%, 15%, 15%, 15%, 10%;
+
+.ivu-table-header,
+.ivu-table-body {
+  table > colgroup {
+    @for $i from 1 through 6 {
+      col:nth-child(#{$i}) {
+        width: #{nth($widths, $i)};
+      }
+    }
+  }
 }
 </style>

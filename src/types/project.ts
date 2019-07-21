@@ -11,7 +11,6 @@ export interface ProjectInfo {
   department: string;
   operator: string;
   operateDateTime: string;
-  privileges?: string[];
   attachments: Array<AttachmentInfo | File>;
 }
 
