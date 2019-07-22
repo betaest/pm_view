@@ -83,13 +83,12 @@ export const Project = {
       .filter(f => !(f as AttachmentInfo).url)
       .forEach(f => data.append('file', f as File, (f as File).name));
 
-    if (info.id === 0) {
-      axios.post(`${Projects}`, data, {
-        withCredentials: true,
-      });
-    } else {
-      axios.put(`${Project}/Project`);
-    }
+    await axios.request({
+      method: info.id === 0 ? 'POST' : 'PUT',
+      withCredentials: true,
+      url: Projects,
+      data,
+    });
 
     return true;
   },
