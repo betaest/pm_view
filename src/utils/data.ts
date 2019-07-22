@@ -77,7 +77,6 @@ export const Project = {
       }
 
     data.append('operator', sessionStorage.getItem('name')!);
-    data.append('operateDateTime', new Date().toJSON());
 
     info.attachments
       .filter(f => !(f as AttachmentInfo).url)

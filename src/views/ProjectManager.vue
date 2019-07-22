@@ -78,7 +78,14 @@ export default class ProjectManager extends Vue {
   private async saveEditor(data: ProjectInfo) {
     const success = await Project.save(data);
 
-    new Promise(r => setTimeout(() => (this.showEditor = false), 1000));
+    if (success) {
+      this.$Notice.success({
+        title: '提示',
+        desc: '保存数据成功',
+      });
+
+      this.showEditor = false;
+    }
   }
 
   private cancelEditor() {

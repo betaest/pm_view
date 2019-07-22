@@ -59,7 +59,7 @@
               type="drag"
               :before-upload="beforeUpload"
               :show-upload-list="false"
-              action="//jsonplaceholder.typicode.com/posts/"
+              action="//localhost"
               class="upload-list"
             >
               <Icon custom="iconfont icon-plus" />
