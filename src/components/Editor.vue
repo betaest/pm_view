@@ -44,11 +44,7 @@
                 <Icon :custom="`iconfont ${getIcon(item.name)}`" size="52" />
                 <p class="upload-item-desc">{{ item.name }}</p>
                 <div class="upload-list-cover">
-                  <Icon
-                    custom="iconfont icon-download"
-                    @click.native="download(item)"
-                    v-if="item.url"
-                  />
+                  <Icon custom="iconfont icon-download" @click.native="download(item)" v-if="item.url" />
                   <Icon custom="iconfont icon-delete" @click.native="remove(item)" />
                 </div>
               </div>
