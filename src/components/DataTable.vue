@@ -72,8 +72,8 @@ export default class DataTable extends Vue {
   }
 
   public mounted() {
-    this.height = document.body.clientHeight - 170;
-    window.addEventListener('resize', () => (this.height = document.body.clientHeight - 170));
+    this.height = document.body.clientHeight - 120;
+    window.addEventListener('resize', () => (this.height = document.body.clientHeight - 120));
 
     this.get();
   }

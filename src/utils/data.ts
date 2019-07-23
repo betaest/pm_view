@@ -87,6 +87,9 @@ export const Project = {
       withCredentials: true,
       url: Projects,
       data,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
 
     return true;
