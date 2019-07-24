@@ -13,7 +13,7 @@
       @on-sort-change="changeSort"
     >
       <template #operation="{row}">
-        <Tooltip content="下载" v-if="row.attachments">
+        <Tooltip content="下载" v-if="row.attachments && row.attachments.length !== 0">
           <Button shape="circle" custom-icon="iconfont icon-download" type="primary" @click="$emit('download', row)" />
         </Tooltip>
 
@@ -146,7 +146,7 @@ export default class DataTable extends Vue {
     return row.operator === sessionStorage.getItem('name');
   }
 
-  private async get() {
+  public async get() {
     this.loading = true;
 
     try {
@@ -195,7 +195,7 @@ export default class DataTable extends Vue {
   margin-right: 5px;
 }
 
-$widths: 15%, 30%, 15%, 15%, 15%, 10%;
+$widths: 15%, 30%, 15%, 12%, 12%, 15%;
 
 .ivu-table-header,
 .ivu-table-body {

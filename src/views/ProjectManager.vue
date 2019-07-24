@@ -79,6 +79,7 @@ export default class ProjectManager extends Vue {
       });
 
       this.showEditor = false;
+      this.dt.get();
     }
   }
 

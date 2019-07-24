@@ -66,13 +66,13 @@ export const Project = {
   async delete(id: number) {
     await verify();
 
-    await axios.delete(`${Projects}/Project/${id}`);
+    await axios.delete(`${Projects}/${id}`);
   },
   async save(info: ProjectInfo): Promise<boolean> {
     const data = new FormData();
 
     for (const name in info)
-      if (info.hasOwnProperty(name) && name !== 'attachments' && !name.startsWith('operate')) {
+      if (info.hasOwnProperty(name) && name !== 'attachments' && !name.startsWith('operat')) {
         data.append(name, (info as any)[name].toString());
       }
 
