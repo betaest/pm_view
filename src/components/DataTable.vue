@@ -14,7 +14,12 @@
     >
       <template #operation="{row}">
         <Tooltip content="下载" v-if="row.attachments && row.attachments.length !== 0">
-          <Button shape="circle" custom-icon="iconfont icon-download" type="primary" @click="$emit('download', row)" />
+          <Button
+            shape="circle"
+            custom-icon="iconfont icon-download"
+            type="primary"
+            @click="download(row.id)"
+          />
         </Tooltip>
 
         <Tooltip content="编辑" v-if="editable(row)">
@@ -48,7 +53,7 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { ProjectInfo } from '@/types/project';
-import { Project } from '@/utils/data';
+import { Project, Attachment } from '@/utils/data';
 import { CreateElement } from 'vue';
 
 type OrderType = 'asc' | 'desc' | 'normal';
@@ -181,6 +186,20 @@ export default class DataTable extends Vue {
         title: '删除数据',
         desc: e.message,
       });
+    }
+  }
+
+  private async donwload(i: number) {
+    this.loading = true;
+
+    try {
+      const success = await Attachment.download(i);
+
+      if (success) {
+      }
+    } catch {
+    } finally {
+      this.loading = false;
     }
   }
 }

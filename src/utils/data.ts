@@ -11,7 +11,9 @@ axios.defaults.withCredentials = true;
 axios.defaults.responseType = 'json';
 
 export const Attachment = {
-  download(id: number, url: string) {},
+  async download(id: number, url: string = ''): Promise<boolean> {
+    return true;
+  },
 
   async remove(id: number, url: string): Promise<boolean> {
     return true;
