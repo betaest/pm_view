@@ -8,7 +8,13 @@
         <DataTable ref="dt" :keyword="keyword" @edit="editDataTable" />
       </Content>
     </Layout>
-    <Editor :show="showEditor" :items="data" :title="editorTitle" @save="saveEditor" @cancel="cancelEditor" />
+    <Editor
+      :show="showEditor"
+      :items="data"
+      :title="editorTitle"
+      @save="saveEditor"
+      @cancel="cancelEditor"
+    />
   </div>
 </template>
 
@@ -70,16 +76,16 @@ export default class ProjectManager extends Vue {
   }
 
   private async saveEditor(data: ProjectInfo) {
-    const success = await Project.save(data);
+    const result = await Project.save(data);
 
-    if (success) {
-      this.$Notice.success({
+    if (result) {
+      this.$Notice[result.success ? 'success' : 'error']({
         title: '提示',
-        desc: '保存数据成功',
+        desc: result.message,
       });
 
       this.showEditor = false;
-      this.dt.get();
+      await this.dt.get();
     }
   }
 

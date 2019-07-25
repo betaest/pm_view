@@ -18,3 +18,8 @@ export interface ProjectInfoReturn {
   total: number;
   rows: Array<ProjectInfo>;
 }
+
+export interface MessageResult {
+  success: boolean;
+  message: string;
+}

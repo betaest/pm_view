@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ProjectInfoReturn, ProjectInfo, AttachmentInfo } from '@/types/project';
+import { ProjectInfoReturn, MessageResult, ProjectInfo, AttachmentInfo } from '@/types/project';
 import { VerifyReturn } from '@/types/verify';
 import Cookies from 'js-cookie';
 
@@ -65,12 +65,16 @@ export const Project = {
 
     return response.data as ProjectInfoReturn;
   },
-  async delete(id: number) {
+  async delete(id: number): Promise<MessageResult> {
     await verify();
 
-    await axios.delete(`${Projects}/${id}`);
+    const response = await axios.delete(`${Projects}/${id}`);
+
+    return response.data as MessageResult;
   },
-  async save(info: ProjectInfo): Promise<boolean> {
+  async save(info: ProjectInfo): Promise<MessageResult> {
+    await verify();
+
     const data = new FormData();
 
     for (const name in info)
@@ -84,19 +88,13 @@ export const Project = {
       .filter(f => !(f as AttachmentInfo).url)
       .forEach(f => data.append('file', f as File, (f as File).name));
 
-    await axios.request({
+    const response = await axios.request({
       method: info.id === 0 ? 'POST' : 'PUT',
       withCredentials: true,
       url: Projects,
       data,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
     });
 
-    return true;
+    return response.data as MessageResult;
   },
 };
-
-// export async function post(info: ProjectInfo): Promise<boolean> {}
-// export async function put(info: ProjectInfo): Promise<boolean> {}

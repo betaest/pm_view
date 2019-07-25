@@ -159,14 +159,13 @@ export default class DataTable extends Vue {
 
       this.total = data.total;
       this.data = data.rows;
-      this.loading = false;
     } catch (e) {
-      this.loading = false;
-
       this.$Notice.error({
-        title: '连接数据',
+        title: '获取数据',
         desc: e.message,
       });
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -174,18 +173,18 @@ export default class DataTable extends Vue {
     this.loading = true;
 
     try {
-      await Project.delete(i);
+      const result = await Project.delete(i);
 
-      await this.get();
+      if (result) {
+        if (result.success) await this.get();
 
+        this.$Notice[result.success ? 'success' : 'error']({
+          title: '删除',
+          desc: result.message,
+        });
+      }
+    } finally {
       this.loading = false;
-    } catch (e) {
-      this.loading = false;
-
-      this.$Notice.error({
-        title: '删除数据',
-        desc: e.message,
-      });
     }
   }
 
