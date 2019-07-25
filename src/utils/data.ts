@@ -11,7 +11,17 @@ axios.defaults.withCredentials = true;
 axios.defaults.responseType = 'json';
 
 export const Attachment = {
-  async download(id: number, url: string = ''): Promise<boolean> {
+  async download(id: number): Promise<boolean> {
+    await verify();
+
+    const response = await axios.get(`${Attachments}/${id}`, {
+      responseType: "blob"
+    });
+
+    if ((response.data as MessageResult).message) {
+
+    }
+
     return true;
   },
 

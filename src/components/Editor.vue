@@ -144,8 +144,8 @@ export default class Editor extends Vue {
     });
   }
 
-  private download(item: AttachmentInfo) {
-    Attachment.download(this.items.id, item.url);
+  private async download(item: AttachmentInfo) {
+    const success = await Attachment.download(item.id);
   }
 
   private removeFromUi(item: AttachmentInfo | File) {
