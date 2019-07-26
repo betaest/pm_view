@@ -13,13 +13,8 @@
       @on-sort-change="changeSort"
     >
       <template #operation="{row}">
-        <Tooltip content="下载" v-if="row.attachments && row.attachments.length !== 0">
-          <Button
-            shape="circle"
-            custom-icon="iconfont icon-download"
-            type="primary"
-            @click="download(row.id)"
-          />
+        <Tooltip content="下载" v-if="row.attachments && row.attachments.filter(a => a.state === 'A').length !== 0">
+          <Button shape="circle" custom-icon="iconfont icon-download" type="primary" @click="download(row)" />
         </Tooltip>
 
         <Tooltip content="编辑" v-if="editable(row)">
@@ -52,7 +47,7 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-import { ProjectInfo } from '@/types/project';
+import { ProjectInfo, AttachmentInfo } from '@/types/project';
 import { Project, Attachment } from '@/utils/data';
 import { CreateElement } from 'vue';
 
@@ -134,7 +129,7 @@ export default class DataTable extends Vue {
   }
 
   private async changeSort({ key, order }: { key: string; order: OrderType }) {
-    // if (this.total <= this.pageSize) return;
+    if (this.total <= this.pageSize) return;
 
     this.sorter = key;
     this.order = order;
@@ -188,17 +183,17 @@ export default class DataTable extends Vue {
     }
   }
 
-  private async donwload(i: number) {
-    this.loading = true;
-
+  private async download(row: ProjectInfo) {
     try {
-      const success = await Attachment.download(i);
+      const attachments = row.attachments.filter(a => (a as AttachmentInfo).state === 'A');
+      const filename = attachments.length === 1 ? attachments[0].name : `${row.name}.zip`;
 
-      if (success) {
-      }
-    } catch {
-    } finally {
-      this.loading = false;
+      await Attachment.downloadAll(row.id, filename);
+    } catch (e) {
+      this.$Notice.error({
+        title: '下载',
+        desc: (e as Error).message.endsWith('404') ? '查看文件未找到' : e.message,
+      });
     }
   }
 }

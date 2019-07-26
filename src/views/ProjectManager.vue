@@ -8,13 +8,7 @@
         <DataTable ref="dt" :keyword="keyword" @edit="editDataTable" />
       </Content>
     </Layout>
-    <Editor
-      :show="showEditor"
-      :items="data"
-      :title="editorTitle"
-      @save="saveEditor"
-      @cancel="cancelEditor"
-    />
+    <Editor :show="showEditor" :item="data" :title="editorTitle" @save="saveEditor" @cancel="cancelEditor" />
   </div>
 </template>
 

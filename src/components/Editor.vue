@@ -1,10 +1,10 @@
 <template>
   <Drawer :title="title" :width="720" v-model="show" :mask-closable="false" :closable="false">
-    <Form :model="items" label-position="left" :label-width="80" ref="form">
+    <Form :model="item" label-position="left" :label-width="80" ref="form">
       <Row :gutter="32">
         <Col span="24">
           <FormItem label="项目名称" :rules="{ required: true, message: '项目名称必须输入' }" prop="name">
-            <Input v-model="items.name" placeholder="请输入名称" />
+            <Input v-model="item.name" placeholder="请输入名称" />
           </FormItem>
         </Col>
       </Row>
@@ -16,7 +16,7 @@
             prop="description"
           >
             <Input
-              v-model="items.description"
+              v-model="item.description"
               type="textarea"
               placeholder="请输入项目描述"
               :autosize="{ minRows: 2, maxRows: 6 }"
@@ -27,27 +27,35 @@
       <Row :gutter="32">
         <Col span="12">
           <FormItem label="发起部门" :rules="{ required: true, message: '发起部门' }" prop="department">
-            <Input v-model="items.department" placeholder="请输入发起部门" />
+            <Input v-model="item.department" placeholder="请输入发起部门" />
           </FormItem>
         </Col>
         <Col span="12">
           <FormItem label="发起人" :rules="{ required: true, message: '发起人' }" prop="handler">
-            <Input v-model="items.handler" placeholder="请输入发起人" />
+            <Input v-model="item.handler" placeholder="请输入发起人" />
           </FormItem>
         </Col>
       </Row>
       <Row :gutter="32">
         <Col span="24">
           <FormItem label="附件">
-            <template v-if="items.attachments && items.attachments.length !== 0">
-              <div v-for="(item, i) of items.attachments" class="upload-list" :key="i">
-                <Icon :custom="`iconfont ${getIcon(item.name)}`" size="52" />
-                <p class="upload-item-desc">{{ item.name }}</p>
-                <div class="upload-list-cover">
-                  <Icon custom="iconfont icon-download" @click.native="download(item)" v-if="item.url" />
-                  <Icon custom="iconfont icon-delete" @click.native="remove(item)" />
-                </div>
-              </div>
+            <template v-if="item.attachments">
+              <template v-for="(attachment, i) of item.attachments">
+                <template v-if="attachment.state !== 'X'">
+                  <div class="upload-list" :key="i">
+                    <Icon :custom="`iconfont ${getIcon(attachment.name)}`" size="52" />
+                    <p class="upload-item-desc">{{ attachment.name }}</p>
+                    <div class="upload-list-cover">
+                      <Icon
+                        custom="iconfont icon-download"
+                        @click.native="download(attachment)"
+                        v-if="attachment.url"
+                      />
+                      <Icon custom="iconfont icon-delete" @click.native="remove(attachment)" />
+                    </div>
+                  </div>
+                </template>
+              </template>
             </template>
 
             <Upload
@@ -87,7 +95,7 @@ export default class Editor extends Vue {
   private readonly show!: boolean;
 
   @Prop(Object)
-  private readonly items!: ProjectInfo;
+  private readonly item!: ProjectInfo;
 
   @Prop(String)
   private readonly title!: string;
@@ -112,7 +120,7 @@ export default class Editor extends Vue {
   };
 
   private get datas(): ProjectInfo {
-    return JSON.parse(JSON.stringify(this.items));
+    return JSON.parse(JSON.stringify(this.item));
   }
 
   private getIcon(name: string): string {
@@ -129,7 +137,7 @@ export default class Editor extends Vue {
   }
 
   private beforeUpload(file: File) {
-    this.items.attachments.push(file);
+    this.item.attachments.push(file);
 
     return false;
   }
@@ -139,28 +147,39 @@ export default class Editor extends Vue {
       if (success) {
         this.saving = true;
 
-        this.$emit('save', this.items);
+        this.$emit('save', this.item);
       }
     });
   }
 
-  private async download(item: AttachmentInfo) {
-    const success = await Attachment.download(item.id);
+  private async download(attachment: AttachmentInfo) {
+    try {
+      await Attachment.download(attachment.id, attachment.name);
+    } catch (e) {
+      this.$Notice.error({
+        title: '编辑',
+        desc: (e as Error).message.endsWith('404') ? '查看文件未找到' : e.message,
+      });
+    }
   }
 
-  private removeFromUi(item: AttachmentInfo | File) {
-    const idx = this.items.attachments.indexOf(item);
+  private removeFromUi(attachment: AttachmentInfo | File) {
+    const idx = this.item.attachments.indexOf(attachment);
 
-    if (idx !== -1) this.items.attachments.splice(idx, 1);
+    if (idx !== -1) this.item.attachments.splice(idx, 1);
   }
 
   private async remove(item: AttachmentInfo | File) {
     if ((item as any).url) {
       const a = item as AttachmentInfo;
-      const success = await Attachment.remove(this.items.id, a.url);
-
-      if (success) {
+      try {
+        await Attachment.remove(a.id);
         this.removeFromUi(item);
+      } catch (e) {
+        this.$Notice.error({
+          title: '编辑',
+          desc: e.message,
+        });
       }
     } else this.removeFromUi(item);
   }

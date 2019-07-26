@@ -2,6 +2,7 @@ export interface AttachmentInfo {
   id: number;
   name: string;
   url: string;
+  state: string;
 }
 export interface ProjectInfo {
   id: number;

@@ -10,23 +10,54 @@ const Attachments = 'https://localhost:5001/a';
 axios.defaults.withCredentials = true;
 axios.defaults.responseType = 'json';
 
+function download(blob: Blob, filename: string) {
+  if (typeof window.navigator.msSaveBlob !== 'undefined') navigator.msSaveBlob(blob, filename);
+  else {
+    var blobURL = window.URL.createObjectURL(blob);
+    var tempLink = document.createElement('a');
+    tempLink.style.display = 'none';
+    tempLink.href = blobURL;
+    tempLink.setAttribute('download', filename);
+
+    if (typeof tempLink.download === 'undefined') tempLink.setAttribute('target', '_blank');
+
+    document.body.appendChild(tempLink);
+    tempLink.click();
+    document.body.removeChild(tempLink);
+    window.URL.revokeObjectURL(blobURL);
+  }
+}
+
 export const Attachment = {
-  async download(id: number): Promise<boolean> {
+  async download(id: number, filename: string) {
     await verify();
 
     const response = await axios.get(`${Attachments}/${id}`, {
-      responseType: "blob"
+      responseType: 'blob',
     });
 
-    if ((response.data as MessageResult).message) {
+    download(response.data as Blob, filename);
+  },
+  async downloadAll(id: number, filename: string) {
+    await verify();
 
-    }
+    const response = await axios.get(`${Attachments}/all/${id}`, {
+      responseType: 'blob',
+    });
 
-    return true;
+    console.log(response.data);
+
+    download(response.data as Blob, filename);
   },
 
-  async remove(id: number, url: string): Promise<boolean> {
-    return true;
+  async remove(id: number) {
+    await verify();
+
+    try {
+      const response = await axios.delete(`${Attachments}/${id}`);
+    } catch {
+      throw new Error('删除文件出错');
+    }
   },
 };
 
