@@ -3,9 +3,9 @@ import { ProjectInfoReturn, MessageResult, ProjectInfo, AttachmentInfo } from '@
 import { VerifyReturn } from '@/types/verify';
 import Cookies from 'js-cookie';
 
-const Projects = 'https://localhost:5001/p';
-const Verify = 'https://localhost:5001/v';
-const Attachments = 'https://localhost:5001/a';
+const Projects = 'http://132.232.28.32:23978/p';
+const Verify = 'http://132.232.28.32:23978/v';
+const Attachments = 'http://132.232.28.32:23978/a';
 
 axios.defaults.withCredentials = true;
 axios.defaults.responseType = 'json';
@@ -44,8 +44,6 @@ export const Attachment = {
     const response = await axios.get(`${Attachments}/all/${id}`, {
       responseType: 'blob',
     });
-
-    console.log(response.data);
 
     download(response.data as Blob, filename);
   },

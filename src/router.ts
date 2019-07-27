@@ -18,5 +18,10 @@ export default new Router({
       name: 'proj',
       component: () => import(/* webpackChunkName: "ProjectManager" */ './views/ProjectManager.vue'),
     },
+    {
+      path: '/BillQuery',
+      name: 'bill',
+      component: () => import(/* webpackChunkName: "BillQuery" */ './views/BillQuery.vue'),
+    },
   ],
 });
