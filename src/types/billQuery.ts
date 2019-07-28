@@ -1,17 +1,13 @@
 export interface InputParameter {
-    name: string;
-    value: any;
+  name: string;
+  value: any;
 }
 
 export interface InputParameters {
-    total: number;
-    parameters: Array<InputParameter>;
+  total: number;
+  parameters: Array<InputParameter>;
 }
 
-export interface ColumnResult {
+export interface ColumnResult {}
 
-}
-
-export interface DataResult {
-    
-}
+export interface DataResult {}
