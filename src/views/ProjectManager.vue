@@ -2,13 +2,31 @@
   <div>
     <Layout>
       <Header>
-        <Toolbar @select="select" @search="search" />
+        <Tooltip content="新建项目" placement="right">
+          <Button
+            type="primary"
+            custom-icon="iconfont icon-appstoreadd"
+            shape="circle"
+            @click="addProject"
+          ></Button>
+        </Tooltip>
+        <Input search placeholder="输入搜索关键字" @on-search="search">
+          <template #prepend>
+            <span>按关键字搜索：</span>
+          </template>
+        </Input>
       </Header>
       <Content>
         <DataTable ref="dt" :keyword="keyword" @edit="editDataTable" />
       </Content>
     </Layout>
-    <Editor :show="showEditor" :item="data" :title="editorTitle" @save="saveEditor" @cancel="cancelEditor" />
+    <Editor
+      :show="showEditor"
+      :item="data"
+      :title="editorTitle"
+      @save="saveEditor"
+      @cancel="cancelEditor"
+    />
   </div>
 </template>
 
@@ -17,11 +35,10 @@ import { Vue, Component, Prop, Ref } from 'vue-property-decorator';
 import { ProjectInfo, AttachmentInfo } from '@/types/project';
 import { Project } from '@/utils/data';
 
-import Toolbar from '@/components/Toolbar.vue';
 import DataTable from '@/components/DataTable.vue';
 import Editor from '@/components/Editor.vue';
 
-@Component({ components: { Toolbar, DataTable, Editor } })
+@Component({ components: { DataTable, Editor } })
 export default class ProjectManager extends Vue {
   @Ref()
   private readonly dt!: DataTable;
@@ -42,20 +59,18 @@ export default class ProjectManager extends Vue {
 
   private editorTitle = '';
 
-  private select(which: string) {
-    if (which === '1') {
-      this.data = {
-        id: 0,
-        name: '',
-        description: '',
-        handler: '',
-        department: '',
-        operator: '',
-        operateDateTime: '',
-        attachments: [],
-      };
-      this.showEditor = true;
-    }
+  private addProject() {
+    this.data = {
+      id: 0,
+      name: '',
+      description: '',
+      handler: '',
+      department: '',
+      operator: '',
+      operateDateTime: '',
+      attachments: [],
+    };
+    this.showEditor = true;
   }
 
   private search(what: string) {
@@ -88,3 +103,24 @@ export default class ProjectManager extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+.ivu-layout header {
+  background-color: #515a6e;
+
+  .ivu-tooltip {
+    margin: 15px;
+    float: left;
+    font-size: 16px;
+  }
+
+  .ivu-input-wrapper {
+    margin: 15px;
+    width: 50%;
+    
+    span {
+      font-weight: bolder;
+    }
+  }
+}
+</style>
