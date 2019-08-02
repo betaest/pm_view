@@ -1,11 +1,11 @@
 <template>
   <Layout>
     <Header>
-        <Input search placeholder="输入搜索关键字" @on-search="search">
-          <template #prepend>
-            <span>万能匹配：</span>
-          </template>
-        </Input>
+      <Input search placeholder="输入搜索关键字" @on-search="search">
+        <template #prepend>
+          <span>万能匹配：</span>
+        </template>
+      </Input>
     </Header>
     <Content>
       <div id="root"></div>
@@ -30,7 +30,7 @@ export default class BillQuery extends Vue {
 
 <style lang="scss" scoped>
 .ivu-layout header {
-  background-color: #24292E;
+  background-color: #24292e;
 
   .ivu-input-wrapper {
     margin: 15px;

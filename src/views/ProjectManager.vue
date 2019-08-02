@@ -3,12 +3,7 @@
     <Layout>
       <Header>
         <Tooltip content="新建项目" placement="right">
-          <Button
-            type="primary"
-            custom-icon="iconfont icon-appstoreadd"
-            shape="circle"
-            @click="addProject"
-          ></Button>
+          <Button type="primary" custom-icon="iconfont icon-appstoreadd" shape="circle" @click="addProject"></Button>
         </Tooltip>
         <Input search placeholder="输入搜索关键字" @on-search="search">
           <template #prepend>
@@ -20,13 +15,7 @@
         <DataTable ref="dt" :keyword="keyword" @edit="editDataTable" />
       </Content>
     </Layout>
-    <Editor
-      :show="showEditor"
-      :item="data"
-      :title="editorTitle"
-      @save="saveEditor"
-      @cancel="cancelEditor"
-    />
+    <Editor :show="showEditor" :item="data" :title="editorTitle" @save="saveEditor" @cancel="cancelEditor" />
   </div>
 </template>
 
@@ -117,7 +106,7 @@ export default class ProjectManager extends Vue {
   .ivu-input-wrapper {
     margin: 15px;
     width: 50%;
-    
+
     span {
       font-weight: bolder;
     }

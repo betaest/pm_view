@@ -19,6 +19,7 @@ import {
   Spin,
   Page,
   Poptip,
+  Sider,
 } from 'iview';
 
 function install(cs: Record<string, any>) {
@@ -47,6 +48,7 @@ install({
   Spin,
   Page,
   Poptip,
+  Sider,
 });
 
 Vue.prototype.$Notice = Notice;

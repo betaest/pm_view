@@ -1,22 +1,90 @@
 <template>
-  <Layout>
-    <Header style="display: none">
-      <Menu mode="horizontal" theme="dark" active-name="proj">
-        <MenuItem name="home" to="/">Home</MenuItem>
-        <MenuItem name="proj" to="/ProjectManager">项目管理</MenuItem>
-        <MenuItem name="bill" to="/BillQuery">计费工具集</MenuItem>
+  <Layout style="height: 100vh">
+    <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="background-color: white">
+      <Menu theme="light" width="auto" :class="menuitemClasses">
+        <MenuItem name="home" to="/">
+          <Tooltip content="首页" placement="right">
+            <Icon custom="iconfont icon-home"></Icon>
+            <span>Home</span>
+          </Tooltip>
+        </MenuItem>
+        <MenuItem name="proj" to="/ProjectManager">
+          <Tooltip content="项目管理" placement="right">
+            <Icon custom="iconfont icon-project"></Icon>
+            <span>项目管理</span>
+          </Tooltip>
+        </MenuItem>
+        <MenuItem name="bill" to="/BillQuery">
+          <Tooltip content="计费工具集" placement="right">
+            <Icon custom="iconfont icon-bill"></Icon>
+            <span>工具集</span>
+          </Tooltip>
+        </MenuItem>
       </Menu>
-    </Header>
-    <Content>
-      <router-view />
-    </Content>
+    </Sider>
+    <router-view />
   </Layout>
 </template>
+
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component
+export default class App extends Vue {
+  private isCollapsed = false;
+
+  private get menuitemClasses() {
+    return ['menu-item', this.isCollapsed ? 'collapsed-menu' : ''];
+  }
+}
+</script>
 
 <style lang="scss">
 html,
 body {
   width: 100%;
   height: 100%;
+}
+
+.menu-item {
+  span {
+    display: inline-block;
+    overflow: hidden;
+    width: 69px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+    transition: width 0.2s ease 0.2s;
+  }
+
+  i {
+    transform: translateX(0px);
+    transition: font-size 0.2s ease, transform 0.2s ease;
+    vertical-align: middle;
+    font-size: 16px;
+    margin-right: 5px;
+  }
+}
+
+.collapsed-menu {
+  span {
+    width: 0;
+    transition: width 0.2s ease;
+  }
+
+  i {
+    transform: translateX(5px);
+    transition: font-size 0.2s ease 0.2s, transform 0.2s ease 0.2s;
+    vertical-align: middle;
+    font-size: 22px;
+  }
+}
+
+.ivu-menu-light.ivu-menu-vertical:after {
+  background-color: transparent;
+}
+
+.ivu-layout header {
+  box-shadow: 0 2px 3px 2px rgba(0, 0, 0, 0.1);
 }
 </style>
