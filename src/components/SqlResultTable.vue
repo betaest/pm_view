@@ -1,8 +1,5 @@
 <template>
-  <div>
-    <Table :columns="column" :data="data" stripe border size="large" style="margin-top: 20px"></Table>
-    <div id="root"></div>
-  </div>
+  <Table :columns="column" :data="data" stripe border size="large" style="margin-top: 20px"></Table>
 </template>
 
 <script lang="ts">
@@ -31,5 +28,8 @@ export default class SqlResultTable extends Vue {
       exp: 'list files',
     },
   ];
+
+  @Prop(String)
+  private readonly add!: string;
 }
 </script>

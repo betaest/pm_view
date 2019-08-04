@@ -1,7 +1,7 @@
 <template>
   <Layout style="height: 100vh">
-    <Sider collapsible :collapsed-width="78" v-model="isCollapsed" style="background-color: white">
-      <Menu theme="light" width="auto" :class="menuitemClasses">
+    <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed">
+      <Menu theme="dark" width="auto" :class="menuitemClasses">
         <MenuItem name="home" to="/">
           <Tooltip content="首页" placement="right">
             <Icon custom="iconfont icon-home"></Icon>
@@ -78,10 +78,6 @@ body {
     vertical-align: middle;
     font-size: 22px;
   }
-}
-
-.ivu-menu-light.ivu-menu-vertical:after {
-  background-color: transparent;
 }
 
 .ivu-layout header {
