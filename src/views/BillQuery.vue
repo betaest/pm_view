@@ -8,9 +8,8 @@
       </Input>
     </Header>
     <Content>
-      <Button @click="clickButton"></Button>
-      <template v-for="item in components">
-        <div :is="item" :add="test"></div>
+      <template v-for="(item, k) in components">
+        <div :is="item" :add="test" :key="k"></div>
       </template>
     </Content>
   </Layout>
