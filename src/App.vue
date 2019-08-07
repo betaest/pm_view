@@ -2,12 +2,12 @@
   <Layout style="height: 100vh">
     <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed">
       <Menu theme="dark" width="auto" :class="menuitemClasses">
-        <MenuItem name="home" to="/">
+        <!-- <MenuItem name="home" to="/">
           <Tooltip content="首页" placement="right">
             <Icon custom="iconfont icon-home"></Icon>
             <span>Home</span>
           </Tooltip>
-        </MenuItem>
+        </MenuItem>-->
         <MenuItem name="proj" to="/ProjectManager">
           <Tooltip content="项目管理" placement="right">
             <Icon custom="iconfont icon-project"></Icon>

@@ -30,7 +30,7 @@ function download(blob: Blob, filename: string) {
 
 export const Attachment = {
   async download(id: number, filename: string) {
-    await verify();
+    // await verify();
 
     const response = await axios.get(`${Attachments}/${id}`, {
       responseType: 'blob',
@@ -39,7 +39,7 @@ export const Attachment = {
     download(response.data as Blob, filename);
   },
   async downloadAll(id: number, filename: string) {
-    await verify();
+    // await verify();
 
     const response = await axios.get(`${Attachments}/all/${id}`, {
       responseType: 'blob',
@@ -49,7 +49,7 @@ export const Attachment = {
   },
 
   async remove(id: number) {
-    await verify();
+    // await verify();
 
     try {
       const response = await axios.delete(`${Attachments}/${id}`);
@@ -59,19 +59,17 @@ export const Attachment = {
   },
 };
 
-async function verify() {
-  let guid = Cookies.get('guid');
+async function verify(token: string) {
+  const name = sessionStorage.getItem('name');
 
-  if (!guid) {
+  if (!name)
     try {
-      const token = location.search.substr(1);
       const response = await axios.get(`${Verify}/${token}`);
 
       if (response.data && (response.data as VerifyReturn).success) {
         let result = response.data as VerifyReturn;
 
         sessionStorage.setItem('name', result.name);
-        Cookies.set('guid', result.guid);
 
         return;
       }
@@ -80,7 +78,6 @@ async function verify() {
     } catch (e) {
       throw new Error('验证登录失败，请重新登录');
     }
-  }
 }
 
 export const Project = {
@@ -91,8 +88,7 @@ export const Project = {
     order: 'asc' | 'desc' | 'normal',
     keyword?: string
   ): Promise<ProjectInfoReturn> {
-    await verify();
-
+    // await verify();
     const response = await axios.get(`${Projects}/${keyword}`, {
       params: {
         page,
@@ -105,14 +101,13 @@ export const Project = {
     return response.data as ProjectInfoReturn;
   },
   async delete(id: number): Promise<MessageResult> {
-    await verify();
-
+    // await verify();
     const response = await axios.delete(`${Projects}/${id}`);
 
     return response.data as MessageResult;
   },
   async save(info: ProjectInfo): Promise<MessageResult> {
-    await verify();
+    // await verify();
 
     const data = new FormData();
 
