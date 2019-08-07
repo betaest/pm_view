@@ -1,13 +1,21 @@
-export interface InputParameter {
-  name: string;
-  value: any;
+export interface ParameterInfo {
+    name: string;
+    value: any;
+
+    [name: string]: any;
 }
 
-export interface InputParameters {
-  total: number;
-  parameters: Array<InputParameter>;
+export interface SqlInfo {
+    parameter: ParameterInfo;
+
+    action: string;
 }
 
-export interface ColumnResult {}
+export interface ColumnInfo {
+    title: string;
+    key: string;
+}
 
-export interface DataResult {}
+export interface ResultInfo {
+    total: number;
+}

@@ -1,40 +1,75 @@
 <template>
-  <Layout style="height: 100vh">
-    <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed">
-      <Menu theme="dark" width="auto" :class="menuitemClasses">
-        <!-- <MenuItem name="home" to="/">
+  <div>
+    <Layout style="height: 100vh">
+      <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed" v-if="!failure">
+        <Menu theme="dark" width="auto" :class="menuitemClasses">
+          <!-- <MenuItem name="home" to="/">
           <Tooltip content="首页" placement="right">
             <Icon custom="iconfont icon-home"></Icon>
             <span>Home</span>
           </Tooltip>
-        </MenuItem>-->
-        <MenuItem name="proj" to="/ProjectManager">
-          <Tooltip content="项目管理" placement="right">
-            <Icon custom="iconfont icon-project"></Icon>
-            <span>项目管理</span>
-          </Tooltip>
-        </MenuItem>
-        <MenuItem name="bill" to="/BillQuery">
-          <Tooltip content="计费工具集" placement="right">
-            <Icon custom="iconfont icon-bill"></Icon>
-            <span>工具集</span>
-          </Tooltip>
-        </MenuItem>
-      </Menu>
-    </Sider>
-    <router-view />
-  </Layout>
+          </MenuItem>-->
+          <MenuItem name="proj" to="/ProjectManager">
+            <Tooltip content="项目管理" placement="right">
+              <Icon custom="iconfont icon-project"></Icon>
+              <span>项目管理</span>
+            </Tooltip>
+          </MenuItem>
+          <MenuItem name="bill" to="/BillQuery">
+            <Tooltip content="计费工具集" placement="right">
+              <Icon custom="iconfont icon-bill"></Icon>
+              <span>工具集</span>
+            </Tooltip>
+          </MenuItem>
+        </Menu>
+      </Sider>
+      <router-view />
+    </Layout>
+    <Spin size="large" fix v-if="loading">
+      <Icon type="ios-loading" size="30" class="load-icon"></Icon>
+      <div>正在验证身份，请等待</div>
+    </Spin>
+  </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
+import { verify } from '@/utils/data';
 
 @Component
 export default class App extends Vue {
   private isCollapsed = false;
+  private loading = false;
+  private failure = false;
 
   private get menuitemClasses() {
     return ['menu-item', this.isCollapsed ? 'collapsed-menu' : ''];
+  }
+
+  private async mounted() {
+    const token = this.$route.query.token as string;
+
+    if (token) {
+      this.loading = true;
+      this.failure = false;
+
+      try {
+        const response = await verify(token);
+
+        this.$router.push(response.to);
+      } catch (e) {
+        this.$Notice.error({
+          title: '错误',
+          desc: (e as Error).message,
+        });
+
+        this.failure = true;
+
+        this.$router.push('404');
+      } finally {
+        this.loading = false;
+      }
+    }
   }
 }
 </script>
@@ -82,5 +117,24 @@ body {
 
 .ivu-layout header {
   box-shadow: 0 2px 3px 2px rgba(0, 0, 0, 0.1);
+}
+
+.ivu-spin-fix {
+  z-index: 9999 !important;
+}
+
+.load-icon {
+  animation: ani-load-spin 1s linear infinite;
+}
+@keyframes ani-load-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

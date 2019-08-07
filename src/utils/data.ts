@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { ProjectInfoReturn, MessageResult, ProjectInfo, AttachmentInfo } from '@/types/project';
 import { VerifyReturn } from '@/types/verify';
-import Cookies from 'js-cookie';
 
 const Projects = 'http://132.232.28.32:23978/p';
 const Verify = 'http://132.232.28.32:23978/v';
@@ -31,7 +30,6 @@ function download(blob: Blob, filename: string) {
 export const Attachment = {
   async download(id: number, filename: string) {
     // await verify();
-
     const response = await axios.get(`${Attachments}/${id}`, {
       responseType: 'blob',
     });
@@ -40,7 +38,6 @@ export const Attachment = {
   },
   async downloadAll(id: number, filename: string) {
     // await verify();
-
     const response = await axios.get(`${Attachments}/all/${id}`, {
       responseType: 'blob',
     });
@@ -50,34 +47,30 @@ export const Attachment = {
 
   async remove(id: number) {
     // await verify();
-
     try {
-      const response = await axios.delete(`${Attachments}/${id}`);
+      await axios.delete(`${Attachments}/${id}`);
     } catch {
       throw new Error('删除文件出错');
     }
   },
 };
 
-async function verify(token: string) {
-  const name = sessionStorage.getItem('name');
+export async function verify(token: string): Promise<VerifyReturn> {
+  try {
+    const response = await axios.get(`${Verify}/${token}`);
 
-  if (!name)
-    try {
-      const response = await axios.get(`${Verify}/${token}`);
+    if (response.data && (response.data as VerifyReturn).success) {
+      let result = response.data as VerifyReturn;
 
-      if (response.data && (response.data as VerifyReturn).success) {
-        let result = response.data as VerifyReturn;
+      sessionStorage.setItem('name', result.name);
 
-        sessionStorage.setItem('name', result.name);
-
-        return;
-      }
-
-      throw 1;
-    } catch (e) {
-      throw new Error('验证登录失败，请重新登录');
+      return result;
     }
+
+    throw 1;
+  } catch (e) {
+    throw new Error('验证登录失败，请重新登录');
+  }
 }
 
 export const Project = {

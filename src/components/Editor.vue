@@ -157,7 +157,7 @@ export default class Editor extends Vue {
       await Attachment.download(attachment.id, attachment.name);
     } catch (e) {
       this.$Notice.error({
-        title: '编辑',
+        title: '错误',
         desc: (e as Error).message.endsWith('404') ? '查看文件未找到' : e.message,
       });
     }
@@ -177,7 +177,7 @@ export default class Editor extends Vue {
         this.removeFromUi(item);
       } catch (e) {
         this.$Notice.error({
-          title: '编辑',
+          title: '错误',
           desc: e.message,
         });
       }

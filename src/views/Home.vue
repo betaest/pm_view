@@ -15,8 +15,5 @@ import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
   },
 })
 export default class Home extends Vue {
-  private mounted() {
-    console.log(this.$route.query.token);
-  }
 }
 </script>
