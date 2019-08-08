@@ -23,5 +23,9 @@ export default new Router({
       name: 'bill',
       component: () => import(/* webpackChunkName: "BillQuery" */ './views/BillQuery.vue'),
     },
+    // {
+    //   path: '/404',
+    //   component: () => import(/* webpackChunkName: "page404" */ './views/page404.vue')
+    // }
   ],
 });

@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { ProjectInfoReturn, MessageResult, ProjectInfo, AttachmentInfo } from '@/types/project';
-import { VerifyReturn } from '@/types/verify';
 
 const Projects = 'http://132.232.28.32:23978/p';
-const Verify = 'http://132.232.28.32:23978/v';
 const Attachments = 'http://132.232.28.32:23978/a';
 
 axios.defaults.withCredentials = true;
@@ -54,24 +52,6 @@ export const Attachment = {
     }
   },
 };
-
-export async function verify(token: string): Promise<VerifyReturn> {
-  try {
-    const response = await axios.get(`${Verify}/${token}`);
-
-    if (response.data && (response.data as VerifyReturn).success) {
-      let result = response.data as VerifyReturn;
-
-      sessionStorage.setItem('name', result.name);
-
-      return result;
-    }
-
-    throw 1;
-  } catch (e) {
-    throw new Error('验证登录失败，请重新登录');
-  }
-}
 
 export const Project = {
   async get(

@@ -16,13 +16,14 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Mixins } from 'vue-property-decorator';
+import { VerifyMixin } from '@/utils/verify';
 import SqlResultTable from '@/components/SqlResultTable.vue';
 
 @Component({
   components: { SqlResultTable },
 })
-export default class BillQuery extends Vue {
+export default class BillQuery extends Mixins(VerifyMixin) {
   private test = 'Hello, world';
 
   private components: string[] = [];

@@ -1,21 +1,21 @@
 export interface ParameterInfo {
-    name: string;
-    value: any;
+  name: string;
+  value: any;
 
-    [name: string]: any;
+  [name: string]: any;
 }
 
 export interface SqlInfo {
-    parameter: ParameterInfo;
+  parameter: ParameterInfo;
 
-    action: string;
+  action: string;
 }
 
 export interface ColumnInfo {
-    title: string;
-    key: string;
+  title: string;
+  key: string;
 }
 
 export interface ResultInfo {
-    total: number;
+  total: number;
 }

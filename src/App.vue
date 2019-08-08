@@ -1,7 +1,7 @@
 <template>
   <div>
     <Layout style="height: 100vh">
-      <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed" v-if="!failure">
+      <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed" v-if="!verify.failure">
         <Menu theme="dark" width="auto" :class="menuitemClasses">
           <!-- <MenuItem name="home" to="/">
           <Tooltip content="首页" placement="right">
@@ -25,7 +25,7 @@
       </Sider>
       <router-view />
     </Layout>
-    <Spin size="large" fix v-if="loading">
+    <Spin size="large" fix v-if="verify.loading">
       <Icon type="ios-loading" size="30" class="load-icon"></Icon>
       <div>正在验证身份，请等待</div>
     </Spin>
@@ -33,43 +33,15 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
-import { verify } from '@/utils/data';
+import { Vue, Component, Prop, Mixins } from 'vue-property-decorator';
+import { VerifyMixin } from '@/utils/verify';
 
 @Component
-export default class App extends Vue {
+export default class App extends Mixins(VerifyMixin) {
   private isCollapsed = false;
-  private loading = false;
-  private failure = false;
 
   private get menuitemClasses() {
     return ['menu-item', this.isCollapsed ? 'collapsed-menu' : ''];
-  }
-
-  private async mounted() {
-    const token = this.$route.query.token as string;
-
-    if (token) {
-      this.loading = true;
-      this.failure = false;
-
-      try {
-        const response = await verify(token);
-
-        this.$router.push(response.to);
-      } catch (e) {
-        this.$Notice.error({
-          title: '错误',
-          desc: (e as Error).message,
-        });
-
-        this.failure = true;
-
-        this.$router.push('404');
-      } finally {
-        this.loading = false;
-      }
-    }
   }
 }
 </script>
