@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Mixins } from 'vue-property-decorator';
 import { VerifyReturn } from '@/types/verify';
 
 const Verify = 'http://132.232.28.32:23978/v';
 
-export async function verify(token?: string): Promise<VerifyReturn> {
+async function verify(token?: string): Promise<VerifyReturn> {
   try {
     const response = await axios.get(`${Verify}/${token || ''}`);
 
@@ -23,12 +23,15 @@ export async function verify(token?: string): Promise<VerifyReturn> {
 }
 
 @Component
-export class VerifyMixin extends Vue {
+export class VerifyComponent extends Vue {
   protected readonly verify = {
     loading: false,
     failure: false,
   };
+}
 
+@Component
+export default class VerifyMixin extends Mixins(VerifyComponent) {
   protected async mounted() {
     const token = this.$route.query.token as string;
 
@@ -46,8 +49,7 @@ export class VerifyMixin extends Vue {
       });
 
       this.verify.failure = true;
-
-      this.$router.push('404');
+      this.$router.replace('/');
     } finally {
       this.verify.loading = false;
     }

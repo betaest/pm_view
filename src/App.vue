@@ -1,14 +1,14 @@
 <template>
   <div>
     <Layout style="height: 100vh">
-      <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed" v-if="!verify.failure">
+      <Sider
+        collapsible
+        :collapsed-width="78"
+        default-collapsed
+        v-model="isCollapsed"
+        v-if="!verify.failure"
+      >
         <Menu theme="dark" width="auto" :class="menuitemClasses">
-          <!-- <MenuItem name="home" to="/">
-          <Tooltip content="首页" placement="right">
-            <Icon custom="iconfont icon-home"></Icon>
-            <span>Home</span>
-          </Tooltip>
-          </MenuItem>-->
           <MenuItem name="proj" to="/ProjectManager">
             <Tooltip content="项目管理" placement="right">
               <Icon custom="iconfont icon-project"></Icon>
@@ -25,8 +25,8 @@
       </Sider>
       <router-view />
     </Layout>
-    <Spin size="large" fix v-if="verify.loading">
-      <Icon type="ios-loading" size="30" class="load-icon"></Icon>
+    <Spin fix v-if="verify.loading">
+      <Icon type="ios-loading" size="30" class="load-icon" />
       <div>正在验证身份，请等待</div>
     </Spin>
   </div>
@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Mixins } from 'vue-property-decorator';
-import { VerifyMixin } from '@/utils/verify';
+import VerifyMixin from '@/utils/verify';
 
 @Component
 export default class App extends Mixins(VerifyMixin) {
@@ -98,6 +98,7 @@ body {
 .load-icon {
   animation: ani-load-spin 1s linear infinite;
 }
+
 @keyframes ani-load-spin {
   from {
     transform: rotate(0deg);

@@ -20,16 +20,15 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Ref, Mixins } from 'vue-property-decorator';
+import { Vue, Component, Prop, Ref } from 'vue-property-decorator';
 import { ProjectInfo, AttachmentInfo } from '@/types/project';
 import { Project } from '@/utils/data';
-import { VerifyMixin } from '@/utils/verify';
 
 import DataTable from '@/components/DataTable.vue';
 import Editor from '@/components/Editor.vue';
 
 @Component({ components: { DataTable, Editor } })
-export default class ProjectManager extends Mixins(VerifyMixin) {
+export default class ProjectManager extends Vue {
   @Ref()
   private readonly dt!: DataTable;
 

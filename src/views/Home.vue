@@ -1,18 +1,27 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+  <div class="center">
+    <img src="../assets/logo.png" />
+    <h1>欢迎来到计费工具</h1>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import { Component, Vue, Mixins } from 'vue-property-decorator';
+import { VerifyComponent } from '@/utils/verify';
 
-@Component({
-  components: {
-    HelloWorld,
-  },
-})
-export default class Home extends Vue {}
+@Component
+export default class Home extends Mixins(VerifyComponent) {}
 </script>
+
+<style lang="scss" scoped>
+.center {
+  position: absolute;
+  margin: auto;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: 300px;
+  text-align: center;
+}
+</style>
