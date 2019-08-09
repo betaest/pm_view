@@ -1,8 +1,6 @@
 import axios from 'axios';
+import { ProjectUrl, AttachmentUrl } from '@/types/urls';
 import { ProjectInfoReturn, MessageResult, ProjectInfo, AttachmentInfo } from '@/types/project';
-
-const Projects = 'http://132.232.28.32:23978/p';
-const Attachments = 'http://132.232.28.32:23978/a';
 
 axios.defaults.withCredentials = true;
 axios.defaults.responseType = 'json';
@@ -28,7 +26,7 @@ function download(blob: Blob, filename: string) {
 export const Attachment = {
   async download(id: number, filename: string) {
     // await verify();
-    const response = await axios.get(`${Attachments}/${id}`, {
+    const response = await axios.get(`${AttachmentUrl}/${id}`, {
       responseType: 'blob',
     });
 
@@ -36,7 +34,7 @@ export const Attachment = {
   },
   async downloadAll(id: number, filename: string) {
     // await verify();
-    const response = await axios.get(`${Attachments}/all/${id}`, {
+    const response = await axios.get(`${AttachmentUrl}/all/${id}`, {
       responseType: 'blob',
     });
 
@@ -46,7 +44,7 @@ export const Attachment = {
   async remove(id: number) {
     // await verify();
     try {
-      await axios.delete(`${Attachments}/${id}`);
+      await axios.delete(`${AttachmentUrl}/${id}`);
     } catch {
       throw new Error('删除文件出错');
     }
@@ -62,7 +60,7 @@ export const Project = {
     keyword?: string
   ): Promise<ProjectInfoReturn> {
     // await verify();
-    const response = await axios.get(`${Projects}/${keyword}`, {
+    const response = await axios.get(`${ProjectUrl}/${keyword}`, {
       params: {
         page,
         pageSize,
@@ -75,7 +73,7 @@ export const Project = {
   },
   async delete(id: number): Promise<MessageResult> {
     // await verify();
-    const response = await axios.delete(`${Projects}/${id}`);
+    const response = await axios.delete(`${ProjectUrl}/${id}`);
 
     return response.data as MessageResult;
   },
@@ -98,7 +96,7 @@ export const Project = {
     const response = await axios.request({
       method: info.id === 0 ? 'POST' : 'PUT',
       withCredentials: true,
-      url: Projects,
+      url: ProjectUrl,
       data,
     });
 

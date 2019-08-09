@@ -1,47 +1,53 @@
 <template>
-  <div>
-    <Layout style="height: 100vh">
-      <Sider
-        collapsible
-        :collapsed-width="78"
-        default-collapsed
-        v-model="isCollapsed"
-        v-if="!verify.failure"
-      >
-        <Menu theme="dark" width="auto" :class="menuitemClasses">
-          <MenuItem name="proj" to="/ProjectManager">
-            <Tooltip content="项目管理" placement="right">
-              <Icon custom="iconfont icon-project"></Icon>
-              <span>项目管理</span>
-            </Tooltip>
-          </MenuItem>
-          <MenuItem name="bill" to="/BillQuery">
-            <Tooltip content="计费工具集" placement="right">
-              <Icon custom="iconfont icon-bill"></Icon>
-              <span>工具集</span>
-            </Tooltip>
-          </MenuItem>
-        </Menu>
-      </Sider>
-      <router-view />
-    </Layout>
-    <Spin fix v-if="verify.loading">
-      <Icon type="ios-loading" size="30" class="load-icon" />
-      <div>正在验证身份，请等待</div>
-    </Spin>
-  </div>
+  <Layout style="height: 100vh">
+    <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed" v-if="visible">
+      <Menu theme="dark" width="auto" :class="menuitemClasses">
+        <MenuItem name="proj" to="/ProjectManager">
+          <Tooltip content="项目管理" placement="right">
+            <Icon custom="iconfont icon-project"></Icon>
+            <span>项目管理</span>
+          </Tooltip>
+        </MenuItem>
+        <MenuItem name="bill" to="/BillQuery">
+          <Tooltip content="计费工具集" placement="right">
+            <Icon custom="iconfont icon-bill"></Icon>
+            <span>工具集</span>
+          </Tooltip>
+        </MenuItem>
+      </Menu>
+    </Sider>
+    <Verify @success="onVerifySuccess" @fail="onVerifyFail" />
+    <router-view />
+  </Layout>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Mixins } from 'vue-property-decorator';
-import VerifyMixin from '@/utils/verify';
+import Verify from '@/components/Verify.vue';
+import { VerifyReturn } from './types/verify';
 
-@Component
-export default class App extends Mixins(VerifyMixin) {
+@Component({ components: { Verify } })
+export default class App extends Vue {
   private isCollapsed = false;
+  private visible = true;
 
   private get menuitemClasses() {
     return ['menu-item', this.isCollapsed ? 'collapsed-menu' : ''];
+  }
+
+  private onVerifySuccess(data: VerifyReturn) {
+    sessionStorage.setItem('name', data.name);
+
+    this.$router.push(data.to);
+  }
+
+  private onVerifyFail(msg: string) {
+    this.visible = false;
+    this.$Notice.error({
+      title: '错误',
+      desc: msg,
+    });
+    this.$router.replace('/');
   }
 }
 </script>
@@ -89,25 +95,5 @@ body {
 
 .ivu-layout header {
   box-shadow: 0 2px 3px 2px rgba(0, 0, 0, 0.1);
-}
-
-.ivu-spin-fix {
-  z-index: 9999 !important;
-}
-
-.load-icon {
-  animation: ani-load-spin 1s linear infinite;
-}
-
-@keyframes ani-load-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(180deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 </style>

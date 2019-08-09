@@ -7,10 +7,9 @@
 
 <script lang="ts">
 import { Component, Vue, Mixins } from 'vue-property-decorator';
-import { VerifyComponent } from '@/utils/verify';
 
 @Component
-export default class Home extends Mixins(VerifyComponent) {}
+export default class Home extends Vue {}
 </script>
 
 <style lang="scss" scoped>
