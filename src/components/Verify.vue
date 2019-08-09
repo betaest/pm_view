@@ -22,8 +22,9 @@ export default class Verify extends Vue {
       const response = await axios.get(`${VerifyUrl}/${token || ''}`);
 
       if (response && (response.data as VerifyReturn).success) this.$emit('success', response.data);
+      else this.$emit('fail', '验证登录失败，请重新登录');
     } catch (e) {
-      this.$emit('fail', '验证登录失败，请重新登录');
+      this.$emit('fail', (e as Error).message);
     } finally {
       this.loading = false;
     }

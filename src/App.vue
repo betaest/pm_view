@@ -38,6 +38,8 @@ export default class App extends Vue {
   private onVerifySuccess(data: VerifyReturn) {
     sessionStorage.setItem('name', data.name);
 
+    console.log(document.cookie);
+
     this.$router.push(data.to);
   }
 
