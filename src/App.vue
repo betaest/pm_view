@@ -1,7 +1,7 @@
 <template>
   <Layout style="height: 100vh">
-    <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed" v-if="visible">
-      <Menu theme="dark" width="auto" :class="menuitemClasses">
+    <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed" v-if="$store.state.verify.success">
+      <Menu theme="dark" width="auto" :class="menuitemClasses" :active-name="$route.name">
         <MenuItem name="proj" to="/ProjectManager">
           <Tooltip content="项目管理" placement="right">
             <Icon custom="iconfont icon-project"></Icon>
@@ -16,40 +16,23 @@
         </MenuItem>
       </Menu>
     </Sider>
-    <Verify @success="onVerifySuccess" @fail="onVerifyFail" />
+    <Spin fix v-if="$store.state.verify.loading">
+      <Icon type="ios-loading" size="30" class="load-icon" />
+      <div>正在验证身份，请等待</div>
+    </Spin>
     <router-view />
   </Layout>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Mixins } from 'vue-property-decorator';
-import Verify from '@/components/Verify.vue';
-import { VerifyReturn } from './types/verify';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 
-@Component({ components: { Verify } })
+@Component
 export default class App extends Vue {
   private isCollapsed = false;
-  private visible = true;
 
   private get menuitemClasses() {
     return ['menu-item', this.isCollapsed ? 'collapsed-menu' : ''];
-  }
-
-  private onVerifySuccess(data: VerifyReturn) {
-    sessionStorage.setItem('name', data.name);
-
-    console.log(document.cookie);
-
-    this.$router.push(data.to);
-  }
-
-  private onVerifyFail(msg: string) {
-    this.visible = false;
-    this.$Notice.error({
-      title: '错误',
-      desc: msg,
-    });
-    this.$router.replace('/');
   }
 }
 </script>
@@ -97,5 +80,25 @@ body {
 
 .ivu-layout header {
   box-shadow: 0 2px 3px 2px rgba(0, 0, 0, 0.1);
+}
+
+.ivu-spin-fix {
+  z-index: 9999 !important;
+}
+
+.load-icon {
+  animation: ani-load-spin 1s linear infinite;
+}
+
+@keyframes ani-load-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

@@ -143,7 +143,7 @@ export default class DataTable extends Vue {
   }
 
   private editable(row: ProjectInfo): boolean {
-    return row.operator === sessionStorage.getItem('name');
+    return row.operator === this.$store.state.name;
   }
 
   public async get() {

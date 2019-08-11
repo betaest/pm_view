@@ -1,9 +1,7 @@
-import axios from 'axios';
+import axios from './axios';
+import store from '../store';
 import { ProjectUrl, AttachmentUrl } from '@/types/urls';
 import { ProjectInfoReturn, MessageResult, ProjectInfo, AttachmentInfo } from '@/types/project';
-
-axios.defaults.withCredentials = true;
-axios.defaults.responseType = 'json';
 
 function download(blob: Blob, filename: string) {
   if (typeof window.navigator.msSaveBlob !== 'undefined') navigator.msSaveBlob(blob, filename);
@@ -87,7 +85,7 @@ export const Project = {
         data.append(name, (info as any)[name].toString());
       }
 
-    data.append('operator', sessionStorage.getItem('name')!);
+    data.append('operator', store.state.name);
 
     info.attachments
       .filter(f => !(f as AttachmentInfo).url)
