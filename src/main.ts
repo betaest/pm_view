@@ -14,12 +14,12 @@ import { VerifyReturn } from '@/types/verify';
 Vue.config.productionTip = false;
 
 router.beforeEach(async (to, from, next) => {
-  if (to.path === '/') next();
+  if (to.path === '/') next(store.state.root || undefined);
 
   try {
-    const token = to.query.token;
+    const token = to.query.token || '';
 
-    var response = await axios.get(`${VerifyUrl}/${token || ''}`);
+    var response = await axios.get(`${VerifyUrl}/${token}`);
 
     if (response && (response.data as VerifyReturn).success) {
       const r = response.data as VerifyReturn;

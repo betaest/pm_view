@@ -1,7 +1,12 @@
 <template>
   <Layout style="height: 100vh">
     <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed" v-if="$store.state.verify.success">
-      <Menu theme="dark" width="auto" :class="menuitemClasses" :active-name="$route.name">
+      <Menu
+        theme="dark"
+        width="auto"
+        :class="['menu-item', { 'collapsed-menu': this.isCollapsed }]"
+        :active-name="$route.name"
+      >
         <MenuItem name="proj" to="/ProjectManager">
           <Tooltip content="项目管理" placement="right">
             <Icon custom="iconfont icon-project"></Icon>
@@ -30,10 +35,6 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 @Component
 export default class App extends Vue {
   private isCollapsed = false;
-
-  private get menuitemClasses() {
-    return ['menu-item', this.isCollapsed ? 'collapsed-menu' : ''];
-  }
 }
 </script>
 
