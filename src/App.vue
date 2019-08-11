@@ -1,10 +1,10 @@
 <template>
   <Layout style="height: 100vh">
-    <Sider collapsible :collapsed-width="78" default-collapsed v-model="isCollapsed" v-if="$store.state.verify.success">
+    <Sider collapsible :collapsed-width="78" default-collapsed v-model="collapsed" v-if="$store.state.verify.success">
       <Menu
         theme="dark"
         width="auto"
-        :class="['menu-item', { 'collapsed-menu': this.isCollapsed }]"
+        :class="['menu-item', { 'collapsed-menu': this.collapsed }]"
         :active-name="$route.name"
       >
         <MenuItem name="proj" to="/ProjectManager">
@@ -34,7 +34,7 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 
 @Component
 export default class App extends Vue {
-  private isCollapsed = false;
+  private collapsed = false;
 }
 </script>
 
