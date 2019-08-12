@@ -20,6 +20,8 @@ import {
   Page,
   Poptip,
   Sider,
+  Select,
+  Option,
 } from 'iview';
 
 function install(cs: Record<string, any>) {
@@ -49,6 +51,8 @@ install({
   Page,
   Poptip,
   Sider,
+  Select,
+  Option,
 });
 
 Vue.prototype.$Notice = Notice;

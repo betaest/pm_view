@@ -16,7 +16,14 @@ Vue.config.productionTip = false;
 router.beforeEach(async (to, from, next) => {
   if (to.path === '/') next(store.state.root || undefined);
 
+  if (typeof to.meta.reqAuth !== 'undefined' && !to.meta.reqAuth) {
+    store.commit('success');
+    return next();
+  }
+
   try {
+    store.commit('init');
+
     const token = to.query.token || '';
 
     var response = await axios.get(`${VerifyUrl}/${token}`);

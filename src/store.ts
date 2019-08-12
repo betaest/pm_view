@@ -14,9 +14,10 @@ const store = new Vuex.Store({
     root: '',
   },
   mutations: {
-    setToken: (state, payload) => ((state.name = payload.name), (state.root = payload.root)),
+    setToken: (state, payload) => ((state.name = payload.name), (state.root = payload.root || state.root)),
+    init: state => (state.verify.loading = state.verify.success = true),
     success: state => ((state.verify.loading = false), (state.verify.success = true)),
-    fail: state => ((state.verify.loading = false), (state.verify.success = false)),
+    fail: state => (state.verify.loading = state.verify.success = false),
   },
 });
 

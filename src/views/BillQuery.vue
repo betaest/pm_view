@@ -3,13 +3,18 @@
     <Header>
       <Input search placeholder="输入搜索关键字" @on-search="search">
         <template #prepend>
-          <span>万能匹配：</span>
+          <Select v-model="bywhat" style="text-align: left; width: 80px;">
+            <Option value="guess">全部匹配</Option>
+            <Option value="byserv">按serv_id</Option>
+            <Option value="byaccnbr">按号码</Option>
+            <Option value="bynum">按bss号码</Option>
+          </Select>
         </template>
       </Input>
     </Header>
     <Content>
       <template v-for="(item, k) in components">
-        <div :is="item" :add="test" :key="k"></div>
+        <div :is="item" :key="k"></div>
       </template>
     </Content>
   </Layout>
@@ -23,7 +28,7 @@ import SqlResultTable from '@/components/SqlResultTable.vue';
   components: { SqlResultTable },
 })
 export default class BillQuery extends Vue {
-  private test = 'Hello, world';
+  private bywhat = 'guess';
 
   private components: string[] = [];
 
@@ -31,16 +36,12 @@ export default class BillQuery extends Vue {
     this.components.push('sql-result-table');
   }
 
-  private clickButton() {
-    this.test = this.test.toUpperCase();
-  }
+  private clickButton() {}
 }
 </script>
 
 <style lang="scss">
 .ivu-layout header {
-  // background-color: #24292e;
-
   .ivu-input-wrapper {
     margin: 15px;
     width: 50%;
