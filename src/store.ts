@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-const store = new Vuex.Store({
+export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     verify: {
@@ -20,5 +20,3 @@ const store = new Vuex.Store({
     fail: state => (state.verify.loading = state.verify.success = false),
   },
 });
-
-export default store;
