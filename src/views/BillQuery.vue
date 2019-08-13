@@ -14,7 +14,7 @@
     </Header>
     <Content>
       <template v-for="(item, k) in components">
-        <div :is="item" :key="k"></div>
+        <div :is="item.type" :key="k">{{item.text}}</div>
       </template>
     </Content>
   </Layout>
@@ -30,10 +30,11 @@ import SqlResultTable from '@/components/SqlResultTable.vue';
 export default class BillQuery extends Vue {
   private bywhat = 'guess';
 
-  private components: string[] = [];
+  private components: any[] = [];
 
   private search(what: string) {
-    this.components.push('sql-result-table');
+    this.components.push({type: 'sql-result-table'});
+    this.components.push({type: 'span', text: 'Hello, BillQuery'});
   }
 
   private clickButton() {}

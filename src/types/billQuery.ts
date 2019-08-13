@@ -4,23 +4,26 @@ export interface DynamicItem {
 }
 
 export interface FieldMenuItem {
-  title: string;
+  title: Array<DynamicItem | string>;
   action: string;
-  params?: Record<string, string>;
+  params?: Record<string, any>;
 }
 
 export interface ColumnInfo {
-  title: string;
+  title: Array<DynamicItem | string>;
   key: string;
   width?: number;
   sortable?: boolean;
+
+  fixed?: boolean;
   menu?: Array<FieldMenuItem>;
 }
 
 export interface ResultInfo {
   total: number;
   title: Array<DynamicItem | string>;
-  //[ {type: 'billing-cycle', params: { value: '201903' }}, '账期的费用：' ]
-  columns: Array<ColumnInfo>;
-  result: Array<Record<string, string>>;
+  //[ {type: 'billing-cycle-picker', params: { values: '[201901,201902,201903,201904,201905]', value: 'new Date()' }}, '账期的费用：' ]
+  header: Array<ColumnInfo>;
+  body: Array<Record<string, any>>;
+  footer: Record<string, any>;
 }
