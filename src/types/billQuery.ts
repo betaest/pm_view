@@ -1,29 +1,24 @@
-export interface DynamicItem {
-  type: string;
-  params: Record<string, string>;
+export interface Text {
+  tag: string;
+  props?: string;
+  on?: string;
+  text?: string;
 }
 
-export interface FieldMenuItem {
-  title: Array<DynamicItem | string>;
-  action: string;
-  params?: Record<string, any>;
-}
-
-export interface ColumnInfo {
-  title: Array<DynamicItem | string>;
+export interface Column {
+  title: string;
   key: string;
   width?: number;
   sortable?: boolean;
-
   fixed?: boolean;
-  menu?: Array<FieldMenuItem>;
+  menu?: Record<number, string>;
 }
 
-export interface ResultInfo {
+export interface Result {
   total: number;
-  title: Array<DynamicItem | string>;
+  title: Array<Text>;
   //[ {type: 'billing-cycle-picker', params: { values: '[201901,201902,201903,201904,201905]', value: 'new Date()' }}, '账期的费用：' ]
-  header: Array<ColumnInfo>;
+  header: Array<Column>;
   body: Array<Record<string, any>>;
   footer: Record<string, any>;
 }
