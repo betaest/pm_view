@@ -17,9 +17,11 @@ router.beforeEach(async (to, from, next) => {
   if (to.path === '/') next(store.state.root || undefined);
 
   if (typeof to.meta.reqAuth !== 'undefined' && !to.meta.reqAuth) {
-    store.commit('success');
+    store.commit('fail');
     return next();
   }
+
+  if (store.state.verify.success) return next();
 
   try {
     store.commit('init');

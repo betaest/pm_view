@@ -7,7 +7,7 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     verify: {
-      success: true,
+      success: false,
       loading: true,
     },
     name: '',
