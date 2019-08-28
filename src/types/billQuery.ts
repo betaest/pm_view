@@ -1,7 +1,7 @@
-export interface Text {
+export interface DynamicComponent {
   tag: string;
-  props?: string;
-  on?: string;
+  props?: Record<string, any>;
+  on?: Record<string, Function>;
   text?: string;
 }
 

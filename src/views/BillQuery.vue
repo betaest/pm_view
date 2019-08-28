@@ -3,7 +3,7 @@
     <Header>
       <Input search placeholder="输入搜索关键字" @on-search="search">
         <template #prepend>
-          <Select v-model="bywhat" style="text-align: left; width: 80px;">
+          <Select v-model="bywhat" style="text-align: left; width: 100px;">
             <Option value="guess">全部匹配</Option>
             <Option value="byserv">按serv_id</Option>
             <Option value="byaccnbr">按号码</Option>
@@ -14,7 +14,13 @@
     </Header>
     <Content>
       <template v-for="(item, k) in components">
-        <div :is="item.type" :key="k">{{item.text}}</div>
+        <div
+          :is="item.tag"
+          :key="k"
+          v-bind="item.props"
+          v-on="item.on"
+          @new="onNewItem"
+        >{{ item.text }}</div>
       </template>
     </Content>
   </Layout>
@@ -23,6 +29,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import SqlResultTable from '@/components/SqlResultTable.vue';
+import { DynamicComponent } from '@/types/billQuery';
 
 @Component({
   components: { SqlResultTable },
@@ -30,14 +37,29 @@ import SqlResultTable from '@/components/SqlResultTable.vue';
 export default class BillQuery extends Vue {
   private bywhat = 'guess';
 
-  private components: any[] = [];
+  private components: Array<DynamicComponent> = [];
 
-  private search(what: string) {
-    this.components.push({type: 'sql-result-table'});
-    this.components.push({type: 'span', text: 'Hello, BillQuery'});
+  private search(value: string) {
+    console.log(this.bywhat, value);
+
+    this.components = [
+      {
+        tag: 'sql-result-table',
+        props: {
+          searchby: this.bywhat,
+          value: {
+            [this.bywhat]: value
+          },
+        },
+        on: {},
+      },
+    ];
   }
 
-  private clickButton() {}
+  private onNewItem(item: DynamicComponent, v: string) {
+    this.components.push(item);
+    console.log(v);
+  }
 }
 </script>
 

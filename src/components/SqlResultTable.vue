@@ -1,35 +1,51 @@
 <template>
-  <Table :columns="column" :data="data" stripe border size="large" style="margin-top: 20px"></Table>
+  <Table
+    :columns="column"
+    :data="result"
+    stripe
+    border
+    size="large"
+    style="margin-top: 20px"
+    @on-row-click="$emit('new', { tag: 'sql-result-table' }, value)"
+  ></Table>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 
 @Component
 export default class SqlResultTable extends Vue {
-  private column = [
-    {
-      title: 'Hello',
-      key: 'id',
-    },
-    {
-      title: 'expression',
-      key: 'exp',
-    },
-  ];
+  private get column() {
+    return [
+      {
+        title: 'Value',
+        key: 'id',
+      },
+      {
+        title: 'Search By',
+        key: 'exp',
+      },
+    ];
+  }
 
-  private data = [
-    {
-      id: 10,
-      exp: 'Hello, world',
-    },
-    {
-      id: 20,
-      exp: 'list files',
-    },
-  ];
+  private get result() {
+    return [
+      {
+        id: 10,
+        exp: 'Hello, world' + new Date(),
+      },
+      {
+        id: this.Value,
+        exp: '',
+      },
+    ];
+  }
 
-  @Prop(String)
-  private readonly add!: string;
+  @Prop(Object)
+  private readonly value!: any;
+
+  private get Value() {
+    return JSON.stringify(this.value);
+  }
 }
 </script>
