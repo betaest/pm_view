@@ -5,6 +5,13 @@ export interface DynamicComponent {
   text?: string;
 }
 
+export interface QueryJsonL {
+  type: string;
+  action: string;
+  query: string;
+  params?: Record<string, any>;
+}
+
 export interface Column {
   title: string;
   key: string;

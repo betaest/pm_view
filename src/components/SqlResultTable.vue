@@ -1,13 +1,15 @@
 <template>
-  <Table
-    :columns="column"
-    :data="result"
-    stripe
-    border
-    size="large"
-    style="margin-top: 20px"
-    @on-row-click="$emit('new', { tag: 'sql-result-table' }, value)"
-  ></Table>
+  <div>
+    <Table
+      :columns="column"
+      :data="result"
+      stripe
+      border
+      size="large"
+      style="margin-top: 20px"
+      @on-row-click="$emit('new', { tag: 'sql-result-table' })"
+    ></Table>
+  </div>
 </template>
 
 <script lang="ts">

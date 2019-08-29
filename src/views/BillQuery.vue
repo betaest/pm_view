@@ -4,8 +4,10 @@
       <Input search placeholder="输入搜索关键字" @on-search="search">
         <template #prepend>
           <Select v-model="bywhat" style="text-align: left; width: 100px;">
-            <Option value="guess">全部匹配</Option>
+            <Option value="all">全部匹配</Option>
             <Option value="byserv">按serv_id</Option>
+            <Option value="byacct">按acct_id</Option>
+            <Option value="byimsi">按IMSI</Option>
             <Option value="byaccnbr">按号码</Option>
             <Option value="bynum">按bss号码</Option>
           </Select>
@@ -35,20 +37,19 @@ import { DynamicComponent } from '@/types/billQuery';
   components: { SqlResultTable },
 })
 export default class BillQuery extends Vue {
-  private bywhat = 'guess';
+  private bywhat = 'all';
 
   private components: Array<DynamicComponent> = [];
 
   private search(value: string) {
-    console.log(this.bywhat, value);
-
     this.components = [
       {
         tag: 'sql-result-table',
         props: {
-          searchby: this.bywhat,
           value: {
-            [this.bywhat]: value
+            type: this.bywhat,
+            query: value,
+            action: 'query'
           },
         },
         on: {},
@@ -56,9 +57,8 @@ export default class BillQuery extends Vue {
     ];
   }
 
-  private onNewItem(item: DynamicComponent, v: string) {
+  private onNewItem(item: DynamicComponent) {
     this.components.push(item);
-    console.log(v);
   }
 }
 </script>
