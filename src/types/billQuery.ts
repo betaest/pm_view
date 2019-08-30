@@ -1,8 +1,12 @@
-export interface DynamicComponent {
+export interface DynamicValue {
+  type: 'eval' | 'string';
+  value: string;
+}
+export interface DynamicString {
   tag: string;
   props?: Record<string, any>;
   on?: Record<string, Function>;
-  text?: string;
+  text?: Array<DynamicValue>;
 }
 
 export interface QueryJsonL {
@@ -23,9 +27,9 @@ export interface Column {
 
 export interface Result {
   total: number;
-  title: Array<Text>;
-  //[ {type: 'billing-cycle-picker', params: { values: '[201901,201902,201903,201904,201905]', value: 'new Date()' }}, '账期的费用：' ]
+  title: Array<DynamicString>;
+  //[ {tag: 'billing-cycle-picker', params: { values: '[201901,201902,201903,201904,201905]', text: 'new Date()' }}, '账期的费用：' ]
   header: Array<Column>;
   body: Array<Record<string, any>>;
-  footer: Record<string, any>;
+  footer?: Record<string, any>;
 }

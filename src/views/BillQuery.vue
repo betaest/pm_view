@@ -22,7 +22,7 @@
           v-bind="item.props"
           v-on="item.on"
           @new="onNewItem"
-        >{{ item.text }}</div>
+        >{{ translate(item.text) }}</div>
       </template>
     </Content>
   </Layout>
@@ -31,7 +31,8 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import SqlResultTable from '@/components/SqlResultTable.vue';
-import { DynamicComponent } from '@/types/billQuery';
+import { DynamicString } from '@/types/billQuery';
+import { loadMenu, translate } from '@/utils/billQuery';
 
 @Component({
   components: { SqlResultTable },
@@ -39,7 +40,7 @@ import { DynamicComponent } from '@/types/billQuery';
 export default class BillQuery extends Vue {
   private bywhat = 'all';
 
-  private components: Array<DynamicComponent> = [];
+  private components: Array<DynamicString> = [];
 
   private search(value: string) {
     this.components = [
@@ -49,7 +50,7 @@ export default class BillQuery extends Vue {
           value: {
             type: this.bywhat,
             query: value,
-            action: 'query'
+            action: 'query',
           },
         },
         on: {},
@@ -57,8 +58,12 @@ export default class BillQuery extends Vue {
     ];
   }
 
-  private onNewItem(item: DynamicComponent) {
+  private onNewItem(item: DynamicString) {
     this.components.push(item);
+  }
+
+  private async created() {
+    await loadMenu();
   }
 }
 </script>

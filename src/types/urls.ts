@@ -4,3 +4,5 @@ const base = `http://${process.env.NODE_ENV !== 'production' ? 'localhost' : '13
 export const ProjectUrl = `${base}/p`;
 export const AttachmentUrl = `${base}/a`;
 export const VerifyUrl = `${base}/v`;
+export const MenuUrl = `${base}/m`;
+export const BillQueryUrl = `${base}/b`;
