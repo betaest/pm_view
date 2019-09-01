@@ -1,18 +1,23 @@
 <template>
-  <div>
-    <span style="font-size: 16px; font-weight: bold; color: rgb(70, 76, 91);">
+  <div style="margin: 20px">
+    <div style="font-weight: bolder">
       <template v-for="(title, t) of result.title">
-        <div :is="title.tag" :key="t" v-bind="title.props" v-on="title.on">{{ title.text }}</div>
+        <div
+          :is="title.tag"
+          :key="t"
+          v-bind="title.props"
+          v-on="title.on"
+          :style="title.style"
+          :class="title.classNames"
+        >{{ title.text }}</div>
       </template>
-    </span>
+    </div>
     <Table
       :columns="result.header"
       :data="result.body"
       :height="250"
       stripe
-      border
-      size="large"
-      style="margin-top: 20px"
+      size="small"
       :loading="loading"
       @on-row-click="$emit('new', { tag: 'sql-result-table' })"
     ></Table>
@@ -21,39 +26,44 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import { Result } from '@/types/billQuery';
-import { translate, translateBody } from '@/utils/billQuery';
+import { Result, DynamicValue, DynamicString } from '@/types/billQuery';
 
 @Component
 export default class SqlResultTable extends Vue {
-  private loading = true;
+  private loading = false;
 
   private get result(): Result {
+    const title: Array<DynamicString> = [];
+    const body = [];
+
+    for (let i = 0; i < Math.round(Math.random() * 3); ++i)
+      title.push({
+        tag: 'span',
+        text: `${new Date()} -- ${Math.round(Math.random() * 3)}`,
+      });
+
+    for (let i = 0; i < Math.round(Math.random() * 100); ++i)
+      body.push({
+        serv_id: i,
+        world: Math.round(Math.random() * 100),
+      });
+
     return {
-      total: 2,
-      title: [
-        {
-          tag: 'span',
-          text: [
-            {
-              type: 'string',
-              value: 'Hello, world',
-            },
-          ],
-        },
-      ],
+      total: body.length,
+      title,
       header: [
+        // { key: 'index', title: '#', type: 'index', width: 50, fixed: true },
+        { key: 'expand', title: '', type: 'expand', width: 50 },
         {
           key: 'serv_id',
           title: 'serv_id',
         },
-      ],
-      body: [
         {
-          serv_id: 10,
-          world: 20,
+          key: 'world',
+          title: '世界',
         },
       ],
+      body,
     };
   }
 

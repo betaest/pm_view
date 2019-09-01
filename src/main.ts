@@ -13,6 +13,8 @@ import { VerifyReturn } from '@/types/verify';
 
 Vue.config.productionTip = false;
 
+require('es6-promise/auto');
+
 router.beforeEach(async (to, from, next) => {
   if (to.path === '/') next(store.state.root || undefined);
 

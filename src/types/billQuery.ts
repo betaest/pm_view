@@ -6,7 +6,7 @@ export interface DynamicString {
   tag: string;
   props?: Record<string, any>;
   on?: Record<string, Function>;
-  text?: Array<DynamicValue>;
+  text?: string;
 }
 
 export interface QueryJsonL {
@@ -19,6 +19,7 @@ export interface QueryJsonL {
 export interface Column {
   title: string;
   key: string;
+  type?: 'selection' | 'expand';
   width?: number;
   sortable?: boolean;
   fixed?: boolean;

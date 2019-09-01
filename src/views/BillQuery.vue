@@ -21,8 +21,12 @@
           :key="k"
           v-bind="item.props"
           v-on="item.on"
+          :style="item.style"
+          :class="item.classNames"
           @new="onNewItem"
-        >{{ translate(item.text) }}</div>
+        >
+          {{ item.text }}
+        </div>
       </template>
     </Content>
   </Layout>
@@ -31,8 +35,8 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import SqlResultTable from '@/components/SqlResultTable.vue';
-import { DynamicString } from '@/types/billQuery';
-import { loadMenu, translate } from '@/utils/billQuery';
+import { DynamicString, DynamicValue } from '@/types/billQuery';
+import { loadMenu } from '@/utils/billQuery';
 
 @Component({
   components: { SqlResultTable },
@@ -63,7 +67,7 @@ export default class BillQuery extends Vue {
   }
 
   private async created() {
-    await loadMenu();
+    // await loadMenu();
   }
 }
 </script>
