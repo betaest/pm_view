@@ -11,7 +11,7 @@ import axios from '@/utils/axios';
 import { VerifyUrl } from '@/types/urls';
 import { VerifyReturn } from '@/types/verify';
 
-Vue.config.productionTip = false;
+Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
 require('es6-promise/auto');
 
