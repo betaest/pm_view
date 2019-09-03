@@ -24,17 +24,38 @@
           :style="item.style"
           :class="item.classNames"
           @new="onNewItem"
+        >{{ item.text }}</div>
+      </template>
+
+      <template v-for="(items, i) of $store.state.billQuery.menu">
+        <Dropdown
+          :key="i"
+          transfer
+          placement="right-start"
+          :style="{position: 'absolute', visibility: 'hidden'}"
+          @on-click="p"
         >
-          {{ item.text }}
-        </div>
+          lodash
+          <DropdownMenu slot="list">
+            <template v-for="(mitems, mi) of items">
+              <DropdownItem
+                :name="mitems.action"
+                :key="mi"
+                :divided="isDivided(items, mi)"
+                v-if="mitems.title !== '-'"
+              >{{ mitems.title }}</DropdownItem>
+            </template>
+          </DropdownMenu>
+        </Dropdown>
       </template>
     </Content>
   </Layout>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
 import SqlResultTable from '@/components/SqlResultTable.vue';
+
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import { DynamicString, DynamicValue } from '@/types/billQuery';
 import { loadMenu } from '@/utils/billQuery';
 
@@ -45,6 +66,37 @@ export default class BillQuery extends Vue {
   private bywhat = 'all';
 
   private components: Array<DynamicString> = [];
+
+  private demoMenu: Record<string, any> = {
+    serv_id: [
+      {
+        title: '查询用户资料',
+        action: 0,
+      },
+      {
+        title: '查询用户缴费信息',
+        action: 1,
+      },
+    ],
+    acct_id: [
+      {
+        title: '查询用户资料',
+        action: 0,
+      },
+      {
+        title: '-',
+        action: -1,
+      },
+      {
+        title: '查询用户缴费信息',
+        action: 1,
+      },
+    ],
+  };
+
+  private isDivided(items: any[], index: number) {
+    return index ? items[index - 1].title === '-' : false;
+  }
 
   private search(value: string) {
     this.components = [
@@ -66,13 +118,18 @@ export default class BillQuery extends Vue {
     this.components.push(item);
   }
 
+  private p(name: string) {
+    console.log(name);
+  }
+
   private async created() {
+    this.$store.commit('loadBillQueryMenu', { menu: this.demoMenu });
     // await loadMenu();
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .ivu-layout header {
   .ivu-input-wrapper {
     margin: 15px;

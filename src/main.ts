@@ -1,19 +1,17 @@
+import 'babel-polyfill';
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-
 import '@/plugins/iview-importer';
-import 'iview/dist/styles/iview.css';
-import '@/fonts/iconfont.css';
-
 import axios from '@/utils/axios';
 import { VerifyUrl } from '@/types/urls';
 import { VerifyReturn } from '@/types/verify';
 
-Vue.config.productionTip = process.env.NODE_ENV === 'production';
+import 'iview/dist/styles/iview.css';
+import '@/fonts/iconfont.css';
 
-require('es6-promise/auto');
+Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
 router.beforeEach(async (to, from, next) => {
   if (to.path === '/') next(store.state.root || undefined);

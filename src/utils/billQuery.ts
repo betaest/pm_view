@@ -1,7 +1,7 @@
 import axios from './axios';
-import { MenuUrl } from '@/types/urls';
-import { DynamicValue } from '@/types/billQuery';
 import store from '@/store';
+
+import { MenuUrl } from '@/types/urls';
 
 export async function loadMenu() {
   store.commit('loadBillQueryMenu', {

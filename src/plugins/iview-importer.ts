@@ -22,6 +22,9 @@ import {
   Sider,
   Select,
   Option,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 } from 'iview';
 
 function install(cs: Record<string, any>) {
@@ -53,6 +56,9 @@ install({
   Sider,
   Select,
   Option,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 });
 
 Vue.prototype.$Notice = Notice;
