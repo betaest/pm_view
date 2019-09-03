@@ -35,7 +35,7 @@
           :style="{position: 'absolute', visibility: 'hidden'}"
           @on-click="p"
         >
-          lodash
+          <Icon custom="iconfont icon-dash" />
           <DropdownMenu slot="list">
             <template v-for="(mitems, mi) of items">
               <DropdownItem
