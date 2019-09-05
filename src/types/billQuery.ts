@@ -9,6 +9,20 @@ export interface DynamicString {
   text?: string;
 }
 
+export interface MenuItem {
+  title: string;
+  action: number;
+}
+
+export interface Menu {
+  items: Array<MenuItem>;
+  state: {
+    visibility: boolean;
+    left: number;
+    top: number;
+  };
+}
+
 export interface QueryJsonL {
   type: string;
   action: string;

@@ -27,21 +27,21 @@
         >{{ item.text }}</div>
       </template>
 
-      <template v-for="(items, i) of $store.state.billQuery.menu">
+      <template v-for="(menu, i) of $store.state.billQuery.menu">
         <Dropdown
           :key="i"
           transfer
           placement="right-start"
-          :style="{position: 'absolute', visibility: 'hidden'}"
+          :style="{position: 'absolute', visibility: menu.state.visibility? '': 'hidden', left: menu.state.left, top: menu.state.top}"
           @on-click="p"
         >
           <Icon custom="iconfont icon-dash" />
           <DropdownMenu slot="list">
-            <template v-for="(mitems, mi) of items">
+            <template v-for="(mitems, mi) of menu.items">
               <DropdownItem
                 :name="mitems.action"
                 :key="mi"
-                :divided="isDivided(items, mi)"
+                :divided="isDivided(menu.items, mi)"
                 v-if="mitems.title !== '-'"
               >{{ mitems.title }}</DropdownItem>
             </template>
@@ -56,7 +56,7 @@
 import SqlResultTable from '@/components/SqlResultTable.vue';
 
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import { DynamicString, DynamicValue } from '@/types/billQuery';
+import { DynamicString, DynamicValue, Menu } from '@/types/billQuery';
 import { loadMenu } from '@/utils/billQuery';
 
 @Component({
@@ -67,31 +67,45 @@ export default class BillQuery extends Vue {
 
   private components: Array<DynamicString> = [];
 
-  private demoMenu: Record<string, any> = {
-    serv_id: [
-      {
-        title: '查询用户资料',
-        action: 0,
+  private demoMenu: Record<string, Menu> = {
+    serv_id: {
+      items: [
+        {
+          title: '查询用户资料',
+          action: 0,
+        },
+        {
+          title: '查询用户缴费信息',
+          action: 1,
+        },
+      ],
+      state: {
+        visibility: false,
+        left: 0,
+        top: 0,
       },
-      {
-        title: '查询用户缴费信息',
-        action: 1,
+    },
+    acct_id: {
+      items: [
+        {
+          title: '查询用户资料',
+          action: 0,
+        },
+        {
+          title: '-',
+          action: -1,
+        },
+        {
+          title: '查询用户缴费信息',
+          action: 1,
+        },
+      ],
+      state: {
+        visibility: false,
+        left: 0,
+        top: 0,
       },
-    ],
-    acct_id: [
-      {
-        title: '查询用户资料',
-        action: 0,
-      },
-      {
-        title: '-',
-        action: -1,
-      },
-      {
-        title: '查询用户缴费信息',
-        action: 1,
-      },
-    ],
+    },
   };
 
   private isDivided(items: any[], index: number) {

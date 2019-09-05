@@ -22,5 +22,10 @@ export default new Vuex.Store({
     success: state => ((state.verify.loading = false), (state.verify.success = true)),
     fail: state => (state.verify.loading = state.verify.success = false),
     loadBillQueryMenu: (state, payload) => (payload.menu ? (state.billQuery.menu = payload.menu) : undefined),
+    setMenuPayload: (state, payload)=>{
+      if (payload.name && (<any>state.billQuery.menu)[payload.name]) {
+        
+      }
+    }
   },
 });
