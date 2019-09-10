@@ -24,7 +24,9 @@
           :style="item.style"
           :class="item.classNames"
           @new="onNewItem"
-        >{{ item.text }}</div>
+        >
+          {{ item.text }}
+        </div>
       </template>
 
       <template v-for="(menu, i) of $store.state.billQuery.menu">
@@ -32,7 +34,12 @@
           :key="i"
           transfer
           placement="right-start"
-          :style="{position: 'absolute', visibility: menu.state.visibility? '': 'hidden', left: menu.state.left, top: menu.state.top}"
+          :style="{
+            position: 'absolute',
+            visibility: menu.state.visibility ? '' : 'hidden',
+            left: menu.state.left,
+            top: menu.state.top,
+          }"
           @on-click="p"
         >
           <Icon custom="iconfont icon-dash" />
@@ -43,7 +50,8 @@
                 :key="mi"
                 :divided="isDivided(menu.items, mi)"
                 v-if="mitems.title !== '-'"
-              >{{ mitems.title }}</DropdownItem>
+                >{{ mitems.title }}</DropdownItem
+              >
             </template>
           </DropdownMenu>
         </Dropdown>
@@ -113,6 +121,8 @@ export default class BillQuery extends Vue {
   }
 
   private search(value: string) {
+    console.log('Array.of(3).includes(0)', Array.of(3).includes(0));
+
     this.components = [
       {
         tag: 'sql-result-table',

@@ -9,7 +9,9 @@
           v-on="title.on"
           :style="title.style"
           :class="title.classNames"
-        >{{ title.text }}</div>
+        >
+          {{ title.text }}
+        </div>
       </template>
     </div>
     <Table

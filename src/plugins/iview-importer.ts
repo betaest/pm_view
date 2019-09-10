@@ -24,14 +24,11 @@ import {
   Option,
   Dropdown,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from 'iview';
 
 function install(cs: Record<string, any>) {
-  for (const name in cs)
-    if (cs.hasOwnProperty(name)) {
-      Vue.component(name, cs[name]);
-    }
+  for (const name in cs) Vue.component(name, cs[name]);
 }
 
 install({
@@ -58,7 +55,7 @@ install({
   Option,
   Dropdown,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 });
 
 Vue.prototype.$Notice = Notice;
