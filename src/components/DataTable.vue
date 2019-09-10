@@ -48,7 +48,7 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { ProjectInfo, AttachmentInfo } from '@/types/project';
-import { Project, Attachment } from '@/utils/data';
+import { Project, Attachment } from '@/utils/projectManager';
 import { CreateElement } from 'vue';
 
 type OrderType = 'asc' | 'desc' | 'normal';

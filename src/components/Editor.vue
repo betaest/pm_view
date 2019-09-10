@@ -86,7 +86,7 @@
 <script lang="ts">
 import { Component, Prop, Watch, Emit, Ref, Vue } from 'vue-property-decorator';
 import { ProjectInfo, AttachmentInfo } from '@/types/project';
-import { Attachment } from '@/utils/data';
+import { Attachment } from '@/utils/projectManager';
 import { Form } from 'iview';
 
 @Component

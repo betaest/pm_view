@@ -22,7 +22,7 @@
 <script lang="ts">
 import { Vue, Component, Prop, Ref } from 'vue-property-decorator';
 import { ProjectInfo, AttachmentInfo } from '@/types/project';
-import { Project } from '@/utils/data';
+import { Project } from '@/utils/projectManager';
 
 import DataTable from '@/components/DataTable.vue';
 import Editor from '@/components/Editor.vue';

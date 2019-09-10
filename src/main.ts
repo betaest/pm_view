@@ -4,50 +4,44 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import '@/plugins/iview-importer';
-import axios from '@/utils/axios';
-import { VerifyUrl } from '@/types/urls';
-import { VerifyReturn } from '@/types/verify';
 
+import { verify } from '@/utils/verify';
+import { Notice } from 'iview';
+
+import '@/plugins/iview-importer';
 import 'iview/dist/styles/iview.css';
 import '@/fonts/iconfont.css';
 
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
-router.beforeEach(async (to, from, next) => {
-  if (to.path === '/') next(store.state.root || undefined);
+router.beforeEach(async (to, from, n) => {
+  function next(...args: any[]) {
+    console.log(to, ...args);
+    return n(...args);
+  }
+  store.commit('init');
 
-  if (typeof to.meta.reqAuth !== 'undefined' && !to.meta.reqAuth) {
+  if ((to.path === '/' && !('token' in to.query)) || !to.meta.reqAuth) {
     store.commit('fail');
     return next();
   }
 
-  if (store.state.verify.success) return next();
-
   try {
-    store.commit('init');
+    var result = await verify((to.query.token as string) || '', to.path);
 
-    const token = to.query.token || '';
-
-    var response = await axios.get(`${VerifyUrl}/${token}`);
-
-    if (response && (response.data as VerifyReturn).success) {
-      const r = response.data as VerifyReturn;
-
-      store.commit('setToken', { name: r.name, token: r.guid, root: r.to });
-      store.commit('success');
-
-      next(store.state.root || undefined);
-    } else throw new Error('验证失败，请重新登陆');
+    if (result.success) {
+      store.commit('success', result);
+      next(result.to || undefined);
+    } else throw new Error('请检查网络、用户信息');
   } catch (e) {
-    Vue.prototype.$Notice.error({
-      title: '错误',
+    (<any>Notice).error({
+      title: '验证失败',
       desc: (e as Error).message,
     });
 
     store.commit('fail');
 
-    next('/');
+    return next('/');
   }
 });
 

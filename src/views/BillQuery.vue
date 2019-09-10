@@ -121,8 +121,6 @@ export default class BillQuery extends Vue {
   }
 
   private search(value: string) {
-    console.log('Array.of(3).includes(0)', Array.of(3).includes(0));
-
     this.components = [
       {
         tag: 'sql-result-table',
