@@ -14,11 +14,7 @@ import '@/fonts/iconfont.css';
 
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
-router.beforeEach(async (to, from, n) => {
-  function next(...args: any[]) {
-    console.log(to, ...args);
-    return n(...args);
-  }
+router.beforeEach(async (to, from, next) => {
   store.commit('init');
 
   if ((to.path === '/' && !('token' in to.query)) || !to.meta.reqAuth) {
@@ -32,7 +28,7 @@ router.beforeEach(async (to, from, n) => {
     if (result.success) {
       store.commit('success', result);
       next(result.to || undefined);
-    } else throw new Error('请检查网络、用户信息');
+    } else throw new Error('请检查网络信息，用户信息');
   } catch (e) {
     (<any>Notice).error({
       title: '验证失败',

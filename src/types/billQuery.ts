@@ -1,8 +1,8 @@
-export interface DynamicValue {
+export interface Value {
   type: 'eval' | 'string';
   value: string;
 }
-export interface DynamicString {
+export interface Title {
   tag: string;
   props?: Record<string, any>;
   on?: Record<string, Function>;
@@ -16,7 +16,7 @@ export interface MenuItem {
 
 export interface Menu {
   items: Array<MenuItem>;
-  state: {
+  state?: {
     visibility: boolean;
     left: number;
     top: number;
@@ -33,18 +33,22 @@ export interface QueryJsonL {
 export interface Column {
   title: string;
   key: string;
-  type?: 'selection' | 'expand';
   width?: number;
   sortable?: boolean;
   fixed?: boolean;
   menu?: Record<number, string>;
 }
 
+export interface Row {
+  [key: string]: any;
+  children?: Row;
+}
+
 export interface Result {
   total: number;
-  title: Array<DynamicString>;
+  title: Array<Title>;
   //[ {tag: 'billing-cycle-picker', params: { values: '[201901,201902,201903,201904,201905]', text: 'new Date()' }}, '账期的费用：' ]
   header: Array<Column>;
-  body: Array<Record<string, any>>;
-  footer?: Record<string, any>;
+  body: Array<Row>;
+  footer?: Row;
 }

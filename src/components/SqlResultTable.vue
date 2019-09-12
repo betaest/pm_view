@@ -9,18 +9,17 @@
           v-on="title.on"
           :style="title.style"
           :class="title.classNames"
-        >
-          {{ title.text }}
-        </div>
+        >{{ title.text }}</div>
       </template>
     </div>
     <Table
       :columns="result.header"
-      :data="result.body"
+      :data="flattern(result.body)"
       :height="250"
       stripe
       size="small"
       :loading="loading"
+      :row-class-name="getName"
       @on-row-click="$emit('new', { tag: 'sql-result-table' })"
     ></Table>
   </div>
@@ -28,14 +27,23 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import { Result, DynamicValue, DynamicString } from '@/types/billQuery';
+import { Result, Value, Title, Row } from '@/types/billQuery';
 
 @Component
 export default class SqlResultTable extends Vue {
   private loading = false;
 
+  private flattern(row: Row): Row & { _children: number[]; _child_level: number } {
+    return { _child_level: 0, _children: [], ...row };
+  }
+
+  private getName(row: Record<string, any>, index: number) {
+    console.log(row, index);
+    return 'normal';
+  }
+
   private get result(): Result {
-    const title: Array<DynamicString> = [];
+    const title: Array<Title> = [];
     const body = [];
 
     for (let i = 0; i < Math.round(Math.random() * 3); ++i)
@@ -48,6 +56,10 @@ export default class SqlResultTable extends Vue {
       body.push({
         serv_id: i,
         world: Math.round(Math.random() * 100),
+        children: {
+          serv_id: i + 10,
+          world: Math.round(Math.random() * 100),
+        },
       });
 
     return {
@@ -55,7 +67,7 @@ export default class SqlResultTable extends Vue {
       title,
       header: [
         // { key: 'index', title: '#', type: 'index', width: 50, fixed: true },
-        { key: 'expand', title: '', type: 'expand', width: 50 },
+        // { key: 'expand', title: '', width: 50 },
         {
           key: 'serv_id',
           title: 'serv_id',
