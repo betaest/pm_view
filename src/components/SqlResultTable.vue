@@ -33,8 +33,8 @@ import { Result, Value, Title, Row } from '@/types/billQuery';
 export default class SqlResultTable extends Vue {
   private loading = false;
 
-  private flattern(row: Row): Row & { _children: number[]; _child_level: number } {
-    return { _child_level: 0, _children: [], ...row };
+  private flattern(rows: Array<Row>): Array<Row & { _children: number[]; _child_level: number }> {
+    return [{ _child_level: 0, _children: [], ...rows[0] }];
   }
 
   private getName(row: Record<string, any>, index: number) {
