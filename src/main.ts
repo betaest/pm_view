@@ -9,8 +9,8 @@ import { verify } from '@/utils/verify';
 import { Notice } from 'iview';
 
 import '@/plugins/iview-importer';
-import 'iview/dist/styles/iview.css';
 import '@/fonts/iconfont.css';
+import 'iview/dist/styles/iview.css';
 
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
 

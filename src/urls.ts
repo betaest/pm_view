@@ -7,4 +7,4 @@ export default {
   verify: `${base}/v`,
   menu: `${base}/m`,
   billQuery: `${base}/bq`,
-};
+} as const;

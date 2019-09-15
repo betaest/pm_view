@@ -20,38 +20,28 @@
           :is="item.tag"
           :key="k"
           v-bind="item.props"
-          v-on="item.on"
-          :style="item.style"
-          :class="item.classNames"
+          v-on="item.events"
           @new="onNewItem"
-        >
-          {{ item.text }}
-        </div>
+        >{{ item.text }}</div>
       </template>
 
-      <template v-for="(menu, i) of $store.state.billQuery.menu">
+      <template v-for="(menu, i) of $store.state.billquery.menus">
         <Dropdown
           :key="i"
           transfer
           placement="right-start"
           :style="{
             position: 'absolute',
-            visibility: menu.state.visibility ? '' : 'hidden',
-            left: menu.state.left,
-            top: menu.state.top,
+            visibility: $store.state.billquery.states[i].visibility ? '' : 'hidden',
+            left: $store.state.billquery.states[i].left,
+            top: $store.state.billquery.states[i].top,
           }"
           @on-click="p"
         >
           <Icon custom="iconfont icon-dash" />
           <DropdownMenu slot="list">
-            <template v-for="(mitems, mi) of menu.items">
-              <DropdownItem
-                :name="mitems.action"
-                :key="mi"
-                :divided="isDivided(menu.items, mi)"
-                v-if="mitems.title !== '-'"
-                >{{ mitems.title }}</DropdownItem
-              >
+            <template v-for="(item, mi) of menu">
+              <DropdownItem :name="item.action" :key="mi" :divided="item.divided">{{ item.title }}</DropdownItem>
             </template>
           </DropdownMenu>
         </Dropdown>
@@ -64,7 +54,7 @@
 import SqlResultTable from '@/components/SqlResultTable.vue';
 
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import { DynamicString, DynamicValue, Menu } from '@/types/billQuery';
+import { Title, Value, Menu, MenuItem, MenuItemState } from '@/types/billQuery';
 import { loadMenu } from '@/utils/billQuery';
 
 @Component({
@@ -73,52 +63,34 @@ import { loadMenu } from '@/utils/billQuery';
 export default class BillQuery extends Vue {
   private bywhat = 'all';
 
-  private components: Array<DynamicString> = [];
+  private components: Array<Title> = [];
 
-  private demoMenu: Record<string, Menu> = {
-    serv_id: {
-      items: [
-        {
-          title: '查询用户资料',
-          action: 0,
-        },
-        {
-          title: '查询用户缴费信息',
-          action: 1,
-        },
-      ],
-      state: {
-        visibility: false,
-        left: 0,
-        top: 0,
+  private demoMenu: Record<string, Array<MenuItem>> = {
+    serv_id: [
+      {
+        title: '查询用户资料',
+        action: 0,
+        divided: false,
       },
-    },
-    acct_id: {
-      items: [
-        {
-          title: '查询用户资料',
-          action: 0,
-        },
-        {
-          title: '-',
-          action: -1,
-        },
-        {
-          title: '查询用户缴费信息',
-          action: 1,
-        },
-      ],
-      state: {
-        visibility: false,
-        left: 0,
-        top: 0,
+      {
+        title: '查询用户缴费信息',
+        action: 1,
+        divided: false,
       },
-    },
+    ],
+    acct_id: [
+      {
+        title: '查询用户资料',
+        action: 0,
+        divided: false,
+      },
+      {
+        title: '查询用户缴费信息',
+        action: 1,
+        divided: true,
+      },
+    ],
   };
-
-  private isDivided(items: any[], index: number) {
-    return index ? items[index - 1].title === '-' : false;
-  }
 
   private search(value: string) {
     this.components = [
@@ -131,12 +103,11 @@ export default class BillQuery extends Vue {
             action: 'query',
           },
         },
-        on: {},
       },
     ];
   }
 
-  private onNewItem(item: DynamicString) {
+  private onNewItem(item: Title) {
     this.components.push(item);
   }
 
@@ -145,7 +116,7 @@ export default class BillQuery extends Vue {
   }
 
   private async created() {
-    this.$store.commit('loadBillQueryMenu', { menu: this.demoMenu });
+    this.$store.commit('billquery/init', { menu: this.demoMenu });
     // await loadMenu();
   }
 }

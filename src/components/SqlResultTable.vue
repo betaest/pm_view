@@ -2,14 +2,7 @@
   <div style="margin: 20px">
     <div style="font-weight: bolder">
       <template v-for="(title, t) of result.title">
-        <div
-          :is="title.tag"
-          :key="t"
-          v-bind="title.props"
-          v-on="title.on"
-          :style="title.style"
-          :class="title.classNames"
-        >{{ title.text }}</div>
+        <div :is="title.tag" :key="t" v-bind="title.props" v-on="title.events">{{ title.text }}</div>
       </template>
     </div>
     <Table
@@ -50,6 +43,9 @@ export default class SqlResultTable extends Vue {
       title.push({
         tag: 'span',
         text: `${new Date()} -- ${Math.round(Math.random() * 3)}`,
+        props: {
+          style: 'font-style: italic'
+        },
       });
 
     for (let i = 0; i < Math.round(Math.random() * 100); ++i)

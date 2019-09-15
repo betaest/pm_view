@@ -5,13 +5,20 @@ export interface Value {
 export interface Title {
   tag: string;
   props?: Record<string, any>;
-  on?: Record<string, Function>;
+  events?: Record<string, Function>;
   text?: string;
 }
 
 export interface MenuItem {
   title: string;
   action: number;
+  divided: boolean;
+}
+
+export interface MenuItemState {
+  visibility: boolean;
+  left: number;
+  top: number;
 }
 
 export interface Menu {
