@@ -1,33 +1,20 @@
-export interface Value {
-  type: 'eval' | 'string';
-  value: string;
-}
 export interface Title {
   tag: string;
   props?: Record<string, any>;
-  events?: Record<string, Function>;
+  events?: Record<string, string>;
   text?: string;
 }
 
 export interface MenuItem {
   title: string;
   action: number;
-  divided: boolean;
+  divided?: boolean;
 }
 
 export interface MenuItemState {
   visibility: boolean;
   left: number;
   top: number;
-}
-
-export interface Menu {
-  items: Array<MenuItem>;
-  state?: {
-    visibility: boolean;
-    left: number;
-    top: number;
-  };
 }
 
 export interface QueryJsonL {

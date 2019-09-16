@@ -54,7 +54,7 @@
 import SqlResultTable from '@/components/SqlResultTable.vue';
 
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import { Title, Value, Menu, MenuItem, MenuItemState } from '@/types/billQuery';
+import { Title, MenuItem, MenuItemState } from '@/types/billQuery';
 import { loadMenu } from '@/utils/billQuery';
 
 @Component({
@@ -70,19 +70,16 @@ export default class BillQuery extends Vue {
       {
         title: '查询用户资料',
         action: 0,
-        divided: false,
       },
       {
         title: '查询用户缴费信息',
         action: 1,
-        divided: false,
       },
     ],
     acct_id: [
       {
         title: '查询用户资料',
         action: 0,
-        divided: false,
       },
       {
         title: '查询用户缴费信息',
@@ -116,7 +113,7 @@ export default class BillQuery extends Vue {
   }
 
   private async created() {
-    this.$store.commit('billquery/init', { menu: this.demoMenu });
+    this.$store.commit('billquery/init', { menus: this.demoMenu });
     // await loadMenu();
   }
 }
