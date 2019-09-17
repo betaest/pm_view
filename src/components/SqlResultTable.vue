@@ -7,7 +7,7 @@
     </div>
     <Table
       :columns="result.header"
-      :data="flattern(result.body)"
+      :data="flattern(result.body, result.footer)"
       :height="250"
       stripe
       size="small"
@@ -26,8 +26,16 @@ import { Result, Title, Row } from '@/types/billQuery';
 export default class SqlResultTable extends Vue {
   private loading = false;
 
-  private flattern(rows: Array<Row>): Array<Row & { _children: number[]; _child_level: number }> {
-    return [{ _child_level: 0, _children: [], ...rows[0] }];
+  private flattern(rows: Array<Row>, footer?: Row): Array<Row & { _children: number[]; _child_level: number }> {
+    if (footer) rows.push(footer);
+
+    const result: Array<Row & { _children: number[]; _child_level: number }> = [];
+
+    for (const row of rows) {
+      
+    }
+
+    return result;
   }
 
   private getName(row: Record<string, any>, index: number) {
@@ -44,7 +52,7 @@ export default class SqlResultTable extends Vue {
         tag: 'span',
         text: `${new Date()} -- ${Math.round(Math.random() * 3)}`,
         props: {
-          style: 'font-style: italic'
+          style: 'font-style: italic',
         },
       });
 
