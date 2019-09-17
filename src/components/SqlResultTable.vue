@@ -22,17 +22,21 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { Result, Title, Row } from '@/types/billQuery';
 
+interface FlatRow extends Row {
+  _children: number[];
+  _child_level: number;
+}
+
 @Component
 export default class SqlResultTable extends Vue {
   private loading = false;
 
-  private flattern(rows: Array<Row>, footer?: Row): Array<Row & { _children: number[]; _child_level: number }> {
+  private flattern(rows: Array<Row>, footer?: Row, root: Array<FlatRow> = []): Array<FlatRow> {
     if (footer) rows.push(footer);
 
-    const result: Array<Row & { _children: number[]; _child_level: number }> = [];
+    const result: Array<FlatRow> = [];
 
     for (const row of rows) {
-      
     }
 
     return result;
