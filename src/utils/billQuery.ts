@@ -30,6 +30,13 @@ export async function execute(): Promise<Result> {
       children: [{
         serv_id: i + 10,
         world: Math.round(Math.random() * 100),
+        children: [{
+          serv_id: 1112,
+          world: 'Hello'
+        },{
+          serv_id: 1112,
+          world: '第二层嵌套'
+        }]
       }],
     });
 
