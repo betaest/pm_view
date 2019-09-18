@@ -7,7 +7,7 @@
     </div>
     <Table
       :columns="result.header"
-      :data="flattern(result.body, result.footer)"
+      :data="result.body"
       :height="250"
       stripe
       size="small"
@@ -19,73 +19,53 @@
 </template>
 
 <script lang="ts">
+import { CreateElement } from 'vue';
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import { Result, Title, Row } from '@/types/billQuery';
-
-interface FlatRow extends Row {
-  _children: number[];
-  _child_level: number;
-}
+import { FlatResult, Row, FlatRow, Column } from '@/types/billQuery';
+import { execute } from '@/utils/billQuery';
 
 @Component
 export default class SqlResultTable extends Vue {
   private loading = false;
-
-  private flattern(rows: Array<Row>, footer?: Row, root: Array<FlatRow> = []): Array<FlatRow> {
-    if (footer) rows.push(footer);
-
-    const result: Array<FlatRow> = [];
-
-    for (const row of rows) {
-    }
-
-    return result;
-  }
 
   private getName(row: Record<string, any>, index: number) {
     console.log(row, index);
     return 'normal';
   }
 
-  private get result(): Result {
-    const title: Array<Title> = [];
-    const body = [];
+  private flattern({ body, footer }: { body: Array<Row>; footer?: Row }): Array<FlatRow> {
+    return [];
+  }
 
-    for (let i = 0; i < Math.round(Math.random() * 3); ++i)
-      title.push({
-        tag: 'span',
-        text: `${new Date()} -- ${Math.round(Math.random() * 3)}`,
-        props: {
-          style: 'font-style: italic',
-        },
-      });
+  private parse(header: Array<Column>, hasChildren: boolean): Array<Column> {
+    if (header && header.length > 0 && hasChildren) {
+      var render = header[0].render;
 
-    for (let i = 0; i < Math.round(Math.random() * 100); ++i)
-      body.push({
-        serv_id: i,
-        world: Math.round(Math.random() * 100),
-        children: {
-          serv_id: i + 10,
-          world: Math.round(Math.random() * 100),
-        },
-      });
+      if (typeof render === 'string') render = new Function('h', 'params', render);
+
+      header[0].render = (h: CreateElement, params: { row: FlatRow; column: Column }) => {
+        h('div', [
+          h('Icon', {
+            props: {
+              type: 'ios-arrow-forward',
+              class: `indent indent-${params.row._child_index}`,
+            },
+          }),
+          render && typeof render === 'function' ? render(h, params) : h('span', params.row[params.column.key]),
+        ]);
+      };
+    }
+    return header;
+  }
+
+  private async execute(): Promise<FlatResult> {
+    const rs = await execute();
 
     return {
-      total: body.length,
-      title,
-      header: [
-        // { key: 'index', title: '#', type: 'index', width: 50, fixed: true },
-        // { key: 'expand', title: '', width: 50 },
-        {
-          key: 'serv_id',
-          title: 'serv_id',
-        },
-        {
-          key: 'world',
-          title: '世界',
-        },
-      ],
-      body,
+      total: rs.total,
+      title: rs.title,
+      header: this.parse(rs.header, rs.body.some(b => typeof b.children !== 'undefined' && b.children.length > 0)),
+      body: this.flattern({ body: rs.body, footer: rs.footer }),
     };
   }
 
@@ -97,3 +77,14 @@ export default class SqlResultTable extends Vue {
   }
 }
 </script>
+<style lang="scss" scoped>
+.indent {
+  margin-right: 10px;
+
+  @for $index from 0 to 10 {
+    .indent-#{$index} {
+      margin-left: 10px * $index;
+    }
+  }
+}
+</style>

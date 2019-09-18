@@ -30,12 +30,17 @@ export interface Column {
   width?: number;
   sortable?: boolean;
   fixed?: boolean;
-  menu?: Record<number, string>;
+  render?: string | Function;
 }
 
 export interface Row {
   [key: string]: any;
-  children?: Row;
+  children?: Array<Row>;
+}
+
+export interface FlatRow extends Row {
+  _children: number;
+  _child_index: number;
 }
 
 export interface Result {
@@ -45,4 +50,11 @@ export interface Result {
   header: Array<Column>;
   body: Array<Row>;
   footer?: Row;
+}
+
+export interface FlatResult {
+  total: number;
+  title: Array<Title>;
+  header: Array<Column>;
+  body: Array<FlatRow>;
 }
