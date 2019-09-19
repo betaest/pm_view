@@ -39,8 +39,10 @@ export interface Row {
 }
 
 export interface FlatRow extends Row {
+  _parent: number;
   _children: number;
   _child_index: number;
+  _status: boolean;
 }
 
 export interface Result {

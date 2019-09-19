@@ -13,7 +13,7 @@
       size="small"
       :loading="loading"
       :row-class-name="getName"
-      @on-row-click="$emit('new', { tag: 'sql-result-table' })"
+      @on-row-click="rowClick"
     ></Table>
   </div>
 </template>
@@ -34,20 +34,39 @@ export default class SqlResultTable extends Vue {
     body: [],
   };
 
-  private getName(row: Record<string, any>, index: number) {
-    // console.log(row, index);
-    return 'normal';
+  private getName(row: FlatRow, index: number) {
+    const body = this.result.body;
+    return (row._parent === -1 || body[row._parent]._status) && row._status ? '' : 'invisible-row';
   }
 
-  private flattern(body: Array<Row>, footer?: Row, indexer: number = 0): Array<FlatRow> {
+  private rowClick(row: FlatRow, index: number) {
+    if (row.children) {
+      for (let i = 1; i < row._children + 1; ++i)
+        this.result.body[index + i]._status = !this.result.body[index + i]._status;
+    }
+  }
+
+  private flattern(
+    body: Array<Row>,
+    footer?: Row,
+    indexer: number = 0,
+    visibile: boolean = true,
+    parent: number = -1
+  ): Array<FlatRow> {
     if (!body) return [];
 
     const rs: Array<FlatRow> = [];
 
     for (const row of body) {
-      rs.push({ ...row, _children: row.children ? row.children.length : 0, _child_index: indexer });
+      rs.push({
+        ...row,
+        _parent: parent,
+        _children: row.children ? row.children.length : 0,
+        _child_index: indexer,
+        _status: visibile,
+      });
 
-      if (row.children) rs.push(...this.flattern(row.children, undefined, indexer + 1));
+      if (row.children) rs.push(...this.flattern(row.children, undefined, indexer + 1, false, parent + rs.length));
     }
 
     return rs;
@@ -55,21 +74,24 @@ export default class SqlResultTable extends Vue {
 
   private parse(header: Array<Column>, hasChildren: boolean): Array<Column> {
     if (header && header.length > 0 && hasChildren) {
-      var render = header[0].render;
+      let render = header[0].render;
 
       if (typeof render === 'string') render = new Function('h', 'params', render);
 
-      header[0].render = (h: CreateElement, params: { row: FlatRow; column: Column }) => {
+      header[0].render = (h: CreateElement, params: { row: FlatRow; column: Column; index: number }) => {
+        const body = this.result.body;
         return h('div', [
           h('Icon', {
             props: {
-              type: params.row._children !== 0 ? 'md-arrow-dropright' : '',
+              type:
+                params.row._children !== 0
+                  ? body[params.row._children + params.index]._status
+                    ? 'md-arrow-dropdown'
+                    : 'md-arrow-dropright'
+                  : '',
               size: 24,
             },
             class: `indent indent-${params.row._child_index}`,
-            on: {
-              click: () => console.log(params.row),
-            },
           }),
           render && typeof render === 'function' ? render(h, params) : h('span', params.row[params.column.key]),
         ]);
@@ -91,13 +113,6 @@ export default class SqlResultTable extends Vue {
 
     this.loading = false;
   }
-
-  @Prop(Object)
-  private readonly value!: any;
-
-  private get Value() {
-    return JSON.stringify(this.value);
-  }
 }
 </script>
 <style lang="scss">
@@ -108,6 +123,10 @@ export default class SqlResultTable extends Vue {
 @for $index from 0 to 10 {
   .indent-#{$index} {
     margin-left: 20px * $index;
+  }
+
+  .invisible-row {
+    display: none;
   }
 }
 </style>
