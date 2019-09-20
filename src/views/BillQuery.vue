@@ -76,7 +76,7 @@ export default class BillQuery extends Vue {
         action: 1,
       },
     ],
-    acct_id: [
+    world: [
       {
         title: '查询用户资料',
         action: 0,

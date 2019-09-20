@@ -1,4 +1,5 @@
-import Vuex, { Module } from 'vuex';
+import Vue from 'vue';
+import { Module } from 'vuex';
 import { GlobalModule } from '..';
 import { MenuItem, MenuItemState } from '@/types/billQuery';
 
@@ -25,6 +26,16 @@ export default {
 
       state.states = states;
     },
-    pop: (state, { name, left, top }) => {},
+    pop: (state, { name, left, top }) => {
+      if (name in state.states) {
+        const m = state.states[name];
+
+        for (var s in state.states) if (state.states[s].visibility) state.states[s].visibility = false;
+
+        m.visibility = true;
+        m.left = left;
+        m.top = top;
+      }
+    },
   },
 } as Module<ModuleState, GlobalModule>;

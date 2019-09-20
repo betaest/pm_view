@@ -30,6 +30,8 @@ export interface Column {
   width?: number;
   sortable?: boolean;
   fixed?: boolean;
+  tooltip?: boolean;
+  className?: string;
   render?: string | Function;
 }
 
@@ -52,11 +54,4 @@ export interface Result {
   header: Array<Column>;
   body: Array<Row>;
   footer?: Row;
-}
-
-export interface FlatResult {
-  total: number;
-  title: Array<Title>;
-  header: Array<Column>;
-  body: Array<FlatRow>;
 }
