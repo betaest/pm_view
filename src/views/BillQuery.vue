@@ -16,13 +16,7 @@
     </Header>
     <Content>
       <template v-for="(item, k) in sections">
-        <div
-          :is="item.tag"
-          :key="k"
-          v-bind="item.props"
-          v-on="item.events"
-          @new="onNewItem"
-        >{{ item.text }}</div>
+        <div :is="item.tag" :key="k" v-bind="item.props" v-on="item.events" @new="onNewItem">{{ item.text }}</div>
       </template>
 
       <template v-for="(menu, i) of $store.state.billquery.menus">
@@ -30,8 +24,8 @@
           :key="i"
           transfer
           placement="right-start"
-          :style="{position: 'absolute', ...getMenuState($store.state.billquery.states[i])}"
-          @on-click="p($event, {[i]: $store.state.billquery.states[i].value})"
+          :style="{ position: 'absolute', ...getMenuState($store.state.billquery.states[i]) }"
+          @on-click="p($event, { [i]: $store.state.billquery.states[i].value })"
         >
           <Icon type="ios-information-circle" color="#bbf" size="24" />
           <DropdownMenu slot="list">
