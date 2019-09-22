@@ -5,17 +5,17 @@
         <template #prepend>
           <Select v-model="bywhat" style="text-align: left; width: 100px;">
             <Option value="all">全部匹配</Option>
-            <Option value="byserv">按serv_id</Option>
-            <Option value="byacct">按acct_id</Option>
-            <Option value="byimsi">按IMSI</Option>
-            <Option value="byaccnbr">按号码</Option>
-            <Option value="bynum">按bss号码</Option>
+            <Option value="serv_id">按serv_id</Option>
+            <Option value="acct_id">按acct_id</Option>
+            <Option value="imsi">按IMSI</Option>
+            <Option value="acc_nbr">按号码</Option>
+            <Option value="acc_num">按bss号码</Option>
           </Select>
         </template>
       </Input>
     </Header>
     <Content>
-      <template v-for="(item, k) in components">
+      <template v-for="(item, k) in sections">
         <div
           :is="item.tag"
           :key="k"
@@ -30,15 +30,10 @@
           :key="i"
           transfer
           placement="right-start"
-          :style="{
-            position: 'absolute',
-            visibility: $store.state.billquery.states[i].visibility ? '' : 'hidden',
-            left: $store.state.billquery.states[i].left,
-            top: $store.state.billquery.states[i].top,
-          }"
-          @on-click="p"
+          :style="{position: 'absolute', ...getMenuState($store.state.billquery.states[i])}"
+          @on-click="p($event, {[i]: $store.state.billquery.states[i].value})"
         >
-          <Icon custom="iconfont icon-dash" />
+          <Icon type="ios-information-circle" color="#bbf" size="24" />
           <DropdownMenu slot="list">
             <template v-for="(item, mi) of menu">
               <DropdownItem :name="item.action" :key="mi" :divided="item.divided">{{ item.title }}</DropdownItem>
@@ -54,7 +49,7 @@
 import SqlResultTable from '@/components/SqlResultTable.vue';
 
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import { Title, MenuItem, MenuItemState } from '@/types/billQuery';
+import { Section, MenuItemState } from '@/types/billQuery';
 import { loadMenu } from '@/utils/billQuery';
 
 @Component({
@@ -63,34 +58,18 @@ import { loadMenu } from '@/utils/billQuery';
 export default class BillQuery extends Vue {
   private bywhat = 'all';
 
-  private components: Array<Title> = [];
+  private sections: Array<Section> = [];
 
-  private demoMenu: Record<string, Array<MenuItem>> = {
-    serv_id: [
-      {
-        title: '查询用户资料',
-        action: 0,
-      },
-      {
-        title: '查询用户缴费信息',
-        action: 1,
-      },
-    ],
-    world: [
-      {
-        title: '查询用户资料',
-        action: 0,
-      },
-      {
-        title: '查询用户缴费信息',
-        action: 1,
-        divided: true,
-      },
-    ],
-  };
+  private getMenuState(state: MenuItemState) {
+    return {
+      visibility: state.visibility ? '' : 'hidden',
+      left: state.left + 'px',
+      top: state.top + 'px',
+    };
+  }
 
   private search(value: string) {
-    this.components = [
+    this.sections = [
       {
         tag: 'sql-result-table',
         props: {
@@ -104,17 +83,16 @@ export default class BillQuery extends Vue {
     ];
   }
 
-  private onNewItem(item: Title) {
-    this.components.push(item);
+  private onNewItem(item: Section) {
+    this.sections.push(item);
   }
 
-  private p(name: string) {
-    console.log(name);
+  private p(name: string, value: object) {
+    console.log(name, value);
   }
 
   private async created() {
-    this.$store.commit('billquery/init', { menus: this.demoMenu });
-    // await loadMenu();
+    await loadMenu();
   }
 }
 </script>

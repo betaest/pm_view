@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import { Module } from 'vuex';
 import { GlobalModule } from '..';
 import { MenuItem, MenuItemState } from '@/types/billQuery';
@@ -22,19 +21,20 @@ export default {
 
       const states: Record<string, MenuItemState> = {};
 
-      for (var name in menus) states[name] = { visibility: false, left: 0, top: 0 };
+      for (var name in menus) states[name] = { visibility: false, left: 0, top: 0, value: '' };
 
       state.states = states;
     },
-    pop: (state, { name, left, top }) => {
+    pop: (state, { name, left, top, value }) => {
+      for (var s in state.states) if (state.states[s].visibility) state.states[s].visibility = false;
+
       if (name in state.states) {
         const m = state.states[name];
-
-        for (var s in state.states) if (state.states[s].visibility) state.states[s].visibility = false;
 
         m.visibility = true;
         m.left = left;
         m.top = top;
+        m.value = value;
       }
     },
   },

@@ -1,6 +1,6 @@
 <template>
   <div style="margin: 20px">
-    <div style="font-weight: bolder">
+    <div style="margin-bottom: 5px;">
       <template v-for="(title, t) of title">
         <div :is="title.tag" :key="t" v-bind="title.props" v-on="title.events">{{ title.text }}</div>
       </template>
@@ -14,25 +14,26 @@
       :loading="loading"
       :row-class-name="rowClass"
       @on-row-click="rowClick"
-      @mouseover.native.stop="enter"
+      @mouseover.native.stop="handleMouseOver"
     ></Table>
   </div>
 </template>
 
 <script lang="ts">
-import { CreateElement, VNodeChildren } from 'vue';
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import { Row, FlatRow, Column, Title } from '@/types/billQuery';
+import { CreateElement } from 'vue';
+import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Row, FlatRow, Column, Section, QueryJsonL } from '@/types/billQuery';
 import { execute } from '@/utils/billQuery';
+import { translateBody, translateHeader } from '@/utils/assist';
+import BillingCyclePicker from './BillingCyclePicker.vue';
 
-@Component
+@Component({ components: { BillingCyclePicker } })
 export default class SqlResultTable extends Vue {
   private loading = true;
   private total = 0;
-  private title: Array<Title> = [];
+  private title: Array<Section> = [];
   private header: Array<Column> = [];
   private body: Array<FlatRow> = [];
-  private showTooltip: boolean = true;
 
   private rowClass(row: FlatRow, index: number) {
     return (row._parent === -1 || this.body[row._parent]._status) && row._status ? '' : 'invisible-row';
@@ -43,130 +44,56 @@ export default class SqlResultTable extends Vue {
       for (let i = 1; i < row._children + 1; ++i) this.body[index + i]._status = !this.body[index + i]._status;
   }
 
-  private flattern(
-    body: Array<Row>,
-    footer?: Row,
-    indexer: number = 0,
-    visibile: boolean = true,
-    parent: number = -1
-  ): Array<FlatRow> {
-    if (!body) return [];
-
-    const rs: Array<FlatRow> = [];
-
-    for (const row of body) {
-      rs.push({
-        ...row,
-        _parent: parent,
-        _children: row.children ? row.children.length : 0,
-        _child_index: indexer,
-        _status: visibile,
-      });
-
-      if (row.children) rs.push(...this.flattern(row.children, undefined, indexer + 1, false, parent + rs.length));
-    }
-
-    return rs;
-  }
-
-  private parse(header: Array<Column>, hasChildren: boolean): Array<Column> {
-    for (const h of header) {
-      h.tooltip = true;
-      h.className = `key-${h.key}`;
-
-      if (typeof h.render === 'string') h.render = new Function('h', 'params', h.render);
-    }
-
-    if (header && header.length > 0 && hasChildren) {
-      let render = header[0].render;
-
-      header[0].className = `has-child ${header[0].className}`;
-
-      header[0].render = (h: CreateElement, params: { row: FlatRow; column: Column; index: number }) => {
-        return render && typeof render === 'function'
-          ? render(h, params)
-          : h(
-              'Tooltip',
-              {
-                props: {
-                  content: params.row[params.column.key],
-                  transfer: true,
-                  maxWidth: 300,
-                },
-                class: 'ivu-table-cell-tooltip',
-              },
-              [
-                h(
-                  'div',
-                  {
-                    class: 'ivu-table-cell-tooltip-content',
-                  },
-                  [
-                    h('Icon', {
-                      props: {
-                        type:
-                          params.row._children !== 0
-                            ? this.body[params.row._children + params.index]._status
-                              ? 'md-arrow-dropdown'
-                              : 'md-arrow-dropright'
-                            : '',
-                        size: 24,
-                      },
-                      class: `indent indent-${params.row._child_index}`,
-                    }),
-                    h('span', params.row[params.column.key]),
-                  ]
-                ),
-              ]
-            );
-      };
-    }
-
-    return header;
-  }
-
-  private getOffset(el: HTMLElement) {
-    const box = el.getBoundingClientRect();
-
-    return {
-      top: box.top + window.pageYOffset - document.documentElement.clientTop,
-      left: box.left + window.pageXOffset - document.documentElement.clientLeft,
-    };
-  }
-
-  private enter(ev: MouseEvent) {
+  private handleMouseOver(ev: MouseEvent) {
     let el = ev.srcElement as HTMLElement;
+
     while (el && el.nodeName !== 'TD') el = el.parentElement as HTMLElement;
 
     if (el) {
-      const pos = this.getOffset(el);
+      const span = el.querySelector('.ivu-table-cell-tooltip-content > span') as HTMLElement;
+      const icon = el.querySelector('.ivu-table-cell-tooltip-content > .ivu-icon') as HTMLElement;
+      const box = el.getBoundingClientRect();
+      const pos = {
+        top: box.top + window.pageYOffset - document.documentElement.clientTop,
+        left: box.left + window.pageXOffset - document.documentElement.clientLeft,
+      };
 
-      console.log({
-        name: el.className,
-        left: pos.left + el.offsetWidth,
-        top: pos.top + el.offsetHeight,
-      });
+      let name = el.className;
+      if (/(?:^|\s+)key-(.*)\s*$/.test(name)) name = RegExp.$1;
+
+      let left = 0;
+
+      if (icon) {
+        const iconStyle = getComputedStyle(icon);
+
+        left += icon.offsetWidth + parseInt(iconStyle.marginLeft || '0px') + parseInt(iconStyle.marginRight || '0px');
+      }
 
       this.$store.commit('billquery/pop', {
-        name: el.className,
-        left: pos.left + el.offsetWidth,
-        top: pos.top + el.offsetHeight,
+        name,
+        left: pos.left + Math.min(left + span.offsetWidth + 16, el.offsetWidth - 36),
+        top: pos.top + el.offsetHeight / 2 - 12,
+        value: span.textContent || span.innerText,
       });
     }
   }
 
   private async created() {
-    const rs = await execute();
+    const rs = await execute(this.value);
 
-    (this.total = rs.total),
-      (this.title = rs.title),
-      (this.header = this.parse(
-        rs.header,
-        rs.body.some(b => typeof b.children !== 'undefined' && b.children.length > 0)
-      )),
-      (this.body = this.flattern(rs.body, rs.footer, 0)),
-      (this.loading = false);
+    this.total = rs.total;
+    this.title = rs.title;
+    this.header = translateHeader(
+      rs.header,
+      rs.body.some(b => typeof b.children !== 'undefined' && b.children.length > 0),
+      offset => this.body[offset]
+    );
+    this.body = translateBody(rs.body, 0);
+    this.loading = false;
   }
+
+  @Prop(Object)
+  private readonly value!: QueryJsonL;
 }
 </script>
 <style lang="scss">

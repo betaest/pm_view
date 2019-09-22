@@ -25,6 +25,7 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
+  DatePicker,
 } from 'iview';
 
 function install(cs: Record<string, any>) {
@@ -56,6 +57,7 @@ install({
   Dropdown,
   DropdownMenu,
   DropdownItem,
+  DatePicker,
 });
 
 Vue.prototype.$Notice = Notice;

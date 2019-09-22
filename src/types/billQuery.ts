@@ -1,7 +1,7 @@
-export interface Title {
+export interface Section {
   tag: string;
   props?: Record<string, any>;
-  events?: Record<string, string>;
+  events?: Record<string, string | Function>;
   text?: string;
 }
 
@@ -15,6 +15,7 @@ export interface MenuItemState {
   visibility: boolean;
   left: number;
   top: number;
+  value: string;
 }
 
 export interface QueryJsonL {
@@ -29,8 +30,6 @@ export interface Column {
   key: string;
   width?: number;
   sortable?: boolean;
-  fixed?: boolean;
-  tooltip?: boolean;
   className?: string;
   render?: string | Function;
 }
@@ -49,7 +48,7 @@ export interface FlatRow extends Row {
 
 export interface Result {
   total: number;
-  title: Array<Title>;
+  title: Array<Section>;
   //[ {tag: 'billing-cycle-picker', params: { values: '[201901,201902,201903,201904,201905]', text: 'new Date()' }}, '账期的费用：' ]
   header: Array<Column>;
   body: Array<Row>;
