@@ -1,5 +1,6 @@
 import { CreateElement } from 'vue';
 import { Row, FlatRow, Column } from '@/types/billQuery';
+import '@/directives/tooltip/tooltip';
 
 export function translateBody(
   body: Array<Row>,
