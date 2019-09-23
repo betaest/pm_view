@@ -8,14 +8,23 @@
     <Table
       :columns="header"
       :data="body"
-      :height="250"
+      :height="200"
       stripe
       size="small"
       :loading="loading"
       :row-class-name="rowClass"
       @on-row-click="rowClick"
       @mouseover.native.stop="handleMouseOver"
-    ></Table>
+    >
+      <Row slot="footer" style="margin-left: 10px">
+        <Col span="16">
+          <span>测试footer</span>
+        </Col>
+        <Col span="8" style="float: right">
+          <Page :total="total" size="small"></Page>
+        </Col>
+      </Row>
+    </Table>
   </div>
 </template>
 
@@ -39,9 +48,13 @@ export default class SqlResultTable extends Vue {
     return (row._parent === -1 || this.body[row._parent]._status) && row._status ? '' : 'invisible-row';
   }
 
+  private find(offset: number): FlatRow {
+    return this.body[offset];
+  }
+
   private rowClick(row: FlatRow, index: number) {
     if (row.children)
-      for (let i = 1; i < row._children + 1; ++i) this.body[index + i]._status = !this.body[index + i]._status;
+      for (let i = 1; i < row._children + 1; ++i) this.find(index + i)._status = !this.find(index + i)._status;
   }
 
   private handleMouseOver(ev: MouseEvent) {
@@ -50,8 +63,8 @@ export default class SqlResultTable extends Vue {
     while (el && el.nodeName !== 'TD') el = el.parentElement as HTMLElement;
 
     if (el) {
-      const span = el.querySelector('.ivu-table-cell-tooltip-content > span') as HTMLElement;
-      const icon = el.querySelector('.ivu-table-cell-tooltip-content > .ivu-icon') as HTMLElement;
+      const span = el.querySelector('.ivu-table-cell-ellipsis > span') as HTMLElement;
+      const icon = el.querySelector('.ivu-table-cell-ellipsis > .ivu-icon') as HTMLElement;
       const box = el.getBoundingClientRect();
       const pos = {
         top: box.top + window.pageYOffset - document.documentElement.clientTop,
@@ -83,12 +96,12 @@ export default class SqlResultTable extends Vue {
 
     this.total = rs.total;
     this.title = rs.title;
+    this.body = translateBody(rs.body, 0);
     this.header = translateHeader(
       rs.header,
       rs.body.some(b => typeof b.children !== 'undefined' && b.children.length > 0),
-      offset => this.body[offset]
+      this.find
     );
-    this.body = translateBody(rs.body, 0);
     this.loading = false;
   }
 

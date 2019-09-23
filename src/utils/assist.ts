@@ -39,45 +39,75 @@ export function translateHeader(
     if (hasChildren && i === 0) h.className = `has-child ${h.className}`;
 
     h.render = (h: CreateElement, { row, column, index }: { row: FlatRow; column: Column; index: number }) => {
-      return h(
-        'Tooltip',
-        {
-          props: {
-            content: row[column.key],
-            maxWidth: 400,
-            placement: 'bottom-start',
-            transfer: true,
-          },
-          class: 'ivu-table-cell-tooltip',
-        },
-        [
-          h(
-            'div',
-            {
-              class: 'ivu-table-cell-tooltip-content',
-            },
-            [
-              hasChildren && i === 0
-                ? h('Icon', {
-                    props: {
-                      type:
-                        row._children !== 0
-                          ? find(row._children + index)._status
-                            ? 'md-arrow-dropdown'
-                            : 'md-arrow-dropright'
-                          : 'ios-more',
-                      size: 24,
-                      color: row._children === 0 ? 'transparent' : '',
-                    },
-                    class: `indent indent-${row._child_index}`,
-                  })
-                : undefined,
-              render && typeof render === 'function' ? render(h, { row, column, index }) : h('span', row[column.key]),
-            ]
-          ),
-        ]
-      );
+      return h('div', { class: 'ivu-table-cell-ellipsis' }, [
+        hasChildren && i === 0
+          ? h('Icon', {
+              props: {
+                type:
+                  row._children !== 0
+                    ? find(row._children + index)._status
+                      ? 'md-arrow-dropdown'
+                      : 'md-arrow-dropright'
+                    : 'ios-more',
+                size: 24,
+                color: row._children === 0 ? 'transparent' : '',
+              },
+              class: `indent indent-${row._child_index}`,
+            })
+          : undefined,
+        render && typeof render === 'function'
+          ? render(h, { row, column, index })
+          : h(
+              'span',
+              {
+                attrs: {
+                  title: row[column.key],
+                },
+              },
+              row[column.key]
+            ),
+      ]);
     };
+
+    //   return h(
+    //     'Tooltip',
+    //     {
+    //       props: {
+    //         content: row[column.key],
+    //         maxWidth: 400,
+    //         placement: 'bottom-start',
+    //         transfer: true,
+    //       },
+    //       class: 'ivu-table-cell-tooltip',
+    //     },
+    //     [
+    //       h(
+    //         'div',
+    //         {
+    //           class: 'ivu-table-cell-tooltip-content',
+    //         },
+    //         [
+    //           hasChildren && i === 0
+    //             ? h('Icon', {
+    //                 props: {
+    //                   type:
+    //                     row._children !== 0
+    //                       ? find(row._children + index)._status
+    //                         ? 'md-arrow-dropdown'
+    //                         : 'md-arrow-dropright'
+    //                       : 'ios-more',
+    //                   size: 24,
+    //                   color: row._children === 0 ? 'transparent' : '',
+    //                 },
+    //                 class: `indent indent-${row._child_index}`,
+    //               })
+    //             : undefined,
+    //           render && typeof render === 'function' ? render(h, { row, column, index }) : h('span', row[column.key]),
+    //         ]
+    //       ),
+    //     ]
+    //   );
+    // };
   }
 
   return header;
