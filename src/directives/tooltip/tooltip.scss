@@ -1,4 +1,4 @@
-.tbq-tooltip {
+.g-d-tooltip {
   position: absolute;
   background: #1e252b;
   color: #ffffff;
@@ -14,7 +14,7 @@
   display: none;
 }
 
-.tbq-tooltip .tooltip-arrow {
+.g-d-tooltip .g-d-tooltip-arrow {
   width: 0;
   height: 0;
   border-style: solid;
@@ -31,7 +31,7 @@
   margin-bottom: 0;
 }
 
-.tbq-tooltip .tooltip-content {
+.g-d-tooltip .g-d-tooltip-content {
   width: 100%;
   word-break: break-all;
 }
