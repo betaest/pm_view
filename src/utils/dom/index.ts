@@ -1,3 +1,3 @@
-import parent from './parent';
+import closest from './closet';
 
-export { parent };
+export { closest };

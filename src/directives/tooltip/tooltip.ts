@@ -1,11 +1,11 @@
 import './tooltip.scss';
 import { DirectiveOptions, DirectiveFunction } from 'vue';
-import { parent } from '@/utils/dom';
+import { closest } from '@/utils/dom';
 
-interface Tooltip {
-  el: HTMLElement;
-  container?: HTMLElement;
-  content: string;
+declare global {
+  interface HTMLElement {
+    $symbol: symbol;
+  }
 }
 
 const tooltipCtrl = document.createElement('div');
@@ -19,7 +19,8 @@ contentCtrl.classList.add('g-d-tooltip-content');
 
 tooltipCtrl.append(arrow, contentCtrl);
 
-const tips: Array<Tooltip> = [];
+const tips: Record<symbol, Record<symbol, { content: string }> | { content: string }> = {};
+const listeners: Array<HTMLElement> = [];
 
 const bind: DirectiveFunction = () =>
   !document.querySelector('.g-d-tooltip') ? document.body.appendChild(tooltipCtrl) : undefined;
@@ -37,7 +38,7 @@ const bind: DirectiveFunction = () =>
 //   document.body.appendChild(tooltip);
 //   if (binding.value) {
 //     if (binding.value.container) {
-//       const container = parent(el, binding.value.container);
+//       const container = closest(el, binding.value.container);
 //       console.log(container);
 //       if (container) {
 //         container.addEventListener('mouseover', ev => {
@@ -57,7 +58,30 @@ const bind: DirectiveFunction = () =>
 // }
 
 const inserted: DirectiveFunction = (el, binding) => {
-  
+  const container =
+    typeof binding.value === 'object' && binding.value.container ? closest(el, binding.value.container) : undefined;
+  const binder = typeof binding.value === 'object' && binding.value.binder ? closest(el, binding.value.binder) : el;
+
+  let bd: { content: string };
+
+  if (container && binder) {
+    if (!container.$symbol) container.$symbol = Symbol();
+    if (!binder.$symbol) binder.$symbol = Symbol();
+
+    let cc = tips[container.$symbol];
+    if (!cc) cc = tips[container.$symbol] = {};
+
+    bd = cc[binder.$symbol];
+    if (!bd) bd = cc[binder.$symbol] = {};
+
+    bd.content = typeof binding.value === 'object' ? binding.value.content : binding.value;
+  }
+
+  // tips.push({
+  //   el: typeof binding.value === 'object' && binding.value.binder ? closest(el, binding.value.binder) : el,
+  //   container,
+  //   content: typeof binding.value === 'object' ? binding.value.content : binding.value,
+  // });
 };
 
 export const tooltip: DirectiveOptions = {
