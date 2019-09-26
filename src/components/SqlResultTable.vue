@@ -33,6 +33,7 @@ import { CreateElement } from 'vue';
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import { Row, FlatRow, Column, Section, QueryJsonL } from '@/types/billQuery';
 import { execute } from '@/utils/billQuery';
+import { offset } from '@/utils/dom';
 import { translateBody, translateHeader } from '@/utils/assist';
 import BillingCyclePicker from './BillingCyclePicker.vue';
 
@@ -45,7 +46,7 @@ export default class SqlResultTable extends Vue {
   private body: Array<FlatRow> = [];
 
   private rowClass(row: FlatRow, index: number) {
-    return (row._parent === -1 || this.body[row._parent]._status) && row._status ? '' : 'invisible-row';
+    return `${(row._parent === -1 || this.body[row._parent]._status) && row._status ? '' : 'invisible-row'} ${(row._children !== 0? 'row-pointer': '')}`;
   }
 
   private find(offset: number): FlatRow {
@@ -65,11 +66,7 @@ export default class SqlResultTable extends Vue {
     if (el) {
       const span = el.querySelector('.ivu-table-cell-ellipsis > span') as HTMLElement;
       const icon = el.querySelector('.ivu-table-cell-ellipsis > .ivu-icon') as HTMLElement;
-      const box = el.getBoundingClientRect();
-      const pos = {
-        top: box.top + window.pageYOffset - document.documentElement.clientTop,
-        left: box.left + window.pageXOffset - document.documentElement.clientLeft,
-      };
+      const pos = offset(el);
 
       let name = el.className;
       if (/(?:^|\s+)key-(.*)\s*$/.test(name)) name = RegExp.$1;
@@ -126,5 +123,9 @@ export default class SqlResultTable extends Vue {
 
 td.has-child .ivu-table-cell {
   padding: 0;
+}
+
+.row-pointer {
+  cursor: pointer;
 }
 </style>

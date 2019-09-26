@@ -1,12 +1,6 @@
 import './tooltip.scss';
 import { DirectiveOptions, DirectiveFunction } from 'vue';
-import { closest } from '@/utils/dom';
-
-declare global {
-  interface HTMLElement {
-    $symbol: symbol;
-  }
-}
+import { closest, offset } from '@/utils/dom';
 
 const tooltipCtrl = document.createElement('div');
 tooltipCtrl.classList.add('g-d-tooltip');
@@ -19,79 +13,103 @@ contentCtrl.classList.add('g-d-tooltip-content');
 
 tooltipCtrl.append(arrow, contentCtrl);
 
-const tips: Record<symbol, Record<symbol, { content: string }> | { content: string }> = {};
-const listeners: Array<HTMLElement> = [];
+interface ContentValue {
+  binder: HTMLElement;
+  el: HTMLElement;
+  content: string;
+}
+
+interface Content {
+  isContainer: boolean;
+  el: HTMLElement;
+  content: Record<number, ContentValue> | string;
+}
+
+let controlCount: number = 1;
+const tips: Record<number, Content> = {};
+let pop: HTMLElement | undefined = undefined;
+
+function showTip(el: HTMLElement, value: string) {
+  const pos = offset(el);
+
+  tooltipCtrl.classList.remove('g-da-show-tip');
+  tooltipCtrl.style.left = `${pos.left}px`;
+  tooltipCtrl.style.top = `${pos.top + el.offsetHeight}px`;
+  tooltipCtrl.querySelector('.g-d-tooltip-content')!.textContent = value;
+  tooltipCtrl.classList.add('g-da-show-tip');
+}
 
 const bind: DirectiveFunction = () =>
   !document.querySelector('.g-d-tooltip') ? document.body.appendChild(tooltipCtrl) : undefined;
 
-// let tooltip = document.querySelector('.g-d-tooltip') as HTMLElement;
-// if (!tooltip) {
-//   tooltip = document.createElement('div');
-//   tooltip.classList.add('g-d-tooltip');
-//   const arrow = document.createElement('div');
-//   arrow.classList.add('g-d-tooltip-arrow');
-//   const content = document.createElement('div');
-//   content.classList.add('g-tooltip-content');
-//   tooltip.appendChild(arrow);
-//   tooltip.appendChild(content);
-//   document.body.appendChild(tooltip);
-//   if (binding.value) {
-//     if (binding.value.container) {
-//       const container = closest(el, binding.value.container);
-//       console.log(container);
-//       if (container) {
-//         container.addEventListener('mouseover', ev => {
-//           if (!tooltip) return;
-//           tooltip.style.display = 'none';
-//           const e = ev.target || ev.srcElement;
-//           if (e && e === el) {
-//             tooltip.style.left = `${ev.clientX}px`;
-//             tooltip.style.top = `${ev.clientY}px`;
-//             content.innerText = typeof binding.value === 'object' ? binding.value.content : binding.value;
-//             tooltip.style.display = 'block';
-//           }
-//         });
-//       }
-//     }
-//   }
-// }
-
 const inserted: DirectiveFunction = (el, binding) => {
   const container =
-    typeof binding.value === 'object' && binding.value.container ? closest(el, binding.value.container) : undefined;
-  const binder = typeof binding.value === 'object' && binding.value.binder ? closest(el, binding.value.binder) : el;
+    (typeof binding.value === 'object' && binding.value.container ? closest(el, binding.value.container) : undefined) ||
+    el;
+  const binder =
+    (typeof binding.value === 'object' && binding.value.binder ? closest(el, binding.value.binder) : undefined) || el;
+  const tip = typeof binding.value === 'object' ? binding.value.content : binding.value;
 
-  let bd: { content: string };
+  let containerId: number = container.$uniqueid;
+  let binderId: number = binder.$uniqueid;
+  const isContainer = container !== el;
+  const content: ContentValue = {
+    binder,
+    el,
+    content: tip,
+  };
 
-  if (container && binder) {
-    if (!container.$symbol) container.$symbol = Symbol();
-    if (!binder.$symbol) binder.$symbol = Symbol();
+  if (!containerId) containerId = container.$uniqueid = controlCount++;
+  if (!binderId) binderId = binder.$uniqueid = controlCount++;
 
-    let cc = tips[container.$symbol];
-    if (!cc) cc = tips[container.$symbol] = {};
+  if (!(containerId in tips)) {
+    tips[containerId] = {
+      isContainer,
+      el: container,
+      content: isContainer
+        ? {
+            [binderId]: content,
+          }
+        : content.content,
+    };
 
-    bd = cc[binder.$symbol];
-    if (!bd) bd = cc[binder.$symbol] = {};
+    container.addEventListener('mouseover', e => {
+      const t = e.target || e.srcElement;
+      const c = tips[containerId];
 
-    bd.content = typeof binding.value === 'object' ? binding.value.content : binding.value;
+      if (c.isContainer && typeof c.content === 'object')
+        for (let name in c.content) {
+          const tt = closest(t as HTMLElement, c.content[name].binder);
+
+          if (tt && tt !== pop) {
+            showTip(tt, c.content[name].content);
+            pop = tt;
+
+            return;
+          }
+        }
+      else if (t === c.el && c.el !== pop) {
+        showTip(t as HTMLElement, c.content as string);
+        pop = c.el;
+      }
+    });
+    container.addEventListener('mouseout', e => {
+      if (pop) {
+        tooltipCtrl.classList.remove('g-da-show-tip');
+        pop = undefined;
+      }
+    });
+  } else {
+    if (!isContainer) return;
+
+    const containerTip = tips[containerId];
+
+    if (typeof containerTip.content === 'object' && !(binderId in containerTip.content))
+      containerTip.content[binderId] = content;
   }
-
-  // tips.push({
-  //   el: typeof binding.value === 'object' && binding.value.binder ? closest(el, binding.value.binder) : el,
-  //   container,
-  //   content: typeof binding.value === 'object' ? binding.value.content : binding.value,
-  // });
 };
 
 export const tooltip: DirectiveOptions = {
   bind,
   inserted,
-  update(el) {
-    console.log('update', el);
-  },
-
-  unbind(el, binding) {
-    console.log('unbind', el);
-  },
 };

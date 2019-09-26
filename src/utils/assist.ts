@@ -51,6 +51,7 @@ export function translateHeader(
               name: 'tooltip',
               value: {
                 container: 'tbody',
+                binder: 'td',
                 content: row[column.key],
               },
             },

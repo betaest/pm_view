@@ -1,3 +1,4 @@
 import closest from './closet';
+import offset from './offset';
 
-export { closest };
+export { closest, offset };
