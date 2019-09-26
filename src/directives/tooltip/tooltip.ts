@@ -1,6 +1,9 @@
 import './tooltip.scss';
 import { DirectiveOptions, DirectiveFunction } from 'vue';
-import { closest, offset } from '@/utils/dom';
+import { closest, offset, addTransitionEndListener } from '@/utils/dom';
+
+let overTooltip = false;
+let overRow = false;
 
 const tooltipCtrl = document.createElement('div');
 tooltipCtrl.classList.add('g-d-tooltip');
@@ -12,10 +15,12 @@ const contentCtrl = document.createElement('div');
 contentCtrl.classList.add('g-d-tooltip-content');
 
 tooltipCtrl.append(arrow, contentCtrl);
+tooltipCtrl.addEventListener('mouseover', () => (overTooltip = true));
+tooltipCtrl.addEventListener('mouseout', () => (overTooltip = false));
+// addTransitionEndListener(tooltipCtrl, () => (tooltipCtrl.style.visibility = 'hidden'));
 
 interface ContentValue {
   binder: HTMLElement;
-  el: HTMLElement;
   content: string;
 }
 
@@ -33,10 +38,22 @@ function showTip(el: HTMLElement, value: string) {
   const pos = offset(el);
 
   tooltipCtrl.classList.remove('g-da-show-tip');
+  tooltipCtrl.style.visibility = '';
   tooltipCtrl.style.left = `${pos.left}px`;
-  tooltipCtrl.style.top = `${pos.top + el.offsetHeight}px`;
+  tooltipCtrl.style.top = `${pos.top + el.offsetHeight - 12}px`;
   tooltipCtrl.querySelector('.g-d-tooltip-content')!.textContent = value;
   tooltipCtrl.classList.add('g-da-show-tip');
+}
+
+function hideTip(): boolean {
+  if (pop && !overTooltip && !overRow) {
+    tooltipCtrl.classList.remove('g-da-show-tip');
+    pop = undefined;
+
+    return true;
+  }
+
+  return false;
 }
 
 const bind: DirectiveFunction = () =>
@@ -55,7 +72,6 @@ const inserted: DirectiveFunction = (el, binding) => {
   const isContainer = container !== el;
   const content: ContentValue = {
     binder,
-    el,
     content: tip,
   };
 
@@ -77,6 +93,8 @@ const inserted: DirectiveFunction = (el, binding) => {
       const t = e.target || e.srcElement;
       const c = tips[containerId];
 
+      overRow = true;
+
       if (c.isContainer && typeof c.content === 'object')
         for (let name in c.content) {
           const tt = closest(t as HTMLElement, c.content[name].binder);
@@ -94,10 +112,9 @@ const inserted: DirectiveFunction = (el, binding) => {
       }
     });
     container.addEventListener('mouseout', e => {
-      if (pop) {
-        tooltipCtrl.classList.remove('g-da-show-tip');
-        pop = undefined;
-      }
+      overRow = false;
+
+      setInterval(hideTip, 100);
     });
   } else {
     if (!isContainer) return;
