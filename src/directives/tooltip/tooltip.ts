@@ -45,16 +45,16 @@ function showTip(el: HTMLElement, value: string) {
   tooltipCtrl.classList.add('g-da-show-tip');
 }
 
-function hideTip(): boolean {
+function hideTip() {
   if (pop && !overTooltip && !overRow) {
     tooltipCtrl.classList.remove('g-da-show-tip');
     pop = undefined;
-
-    return true;
   }
 
-  return false;
+  return;
 }
+
+setInterval(hideTip, 100);
 
 const bind: DirectiveFunction = () =>
   !document.querySelector('.g-d-tooltip') ? document.body.appendChild(tooltipCtrl) : undefined;
@@ -113,8 +113,6 @@ const inserted: DirectiveFunction = (el, binding) => {
     });
     container.addEventListener('mouseout', e => {
       overRow = false;
-
-      setInterval(hideTip, 100);
     });
   } else {
     if (!isContainer) return;

@@ -24,7 +24,7 @@
           :key="i"
           transfer
           placement="right-start"
-          :style="{ position: 'absolute', ...getMenuState($store.state.billquery.states[i]) }"
+          :style="{ position: 'absolute', ...getMenuStyle($store.state.billquery.states[i]) }"
           @on-click="p($event, { [i]: $store.state.billquery.states[i].value })"
         >
           <Icon type="ios-information-circle" color="#bbf" size="24" />
@@ -54,7 +54,7 @@ export default class BillQuery extends Vue {
 
   private sections: Array<Section> = [];
 
-  private getMenuState(state: MenuItemState) {
+  private getMenuStyle(state: MenuItemState) {
     return {
       visibility: state.visibility ? '' : 'hidden',
       left: state.left + 'px',
