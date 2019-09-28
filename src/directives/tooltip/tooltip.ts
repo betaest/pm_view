@@ -17,7 +17,6 @@ contentCtrl.classList.add('g-d-tooltip-content');
 tooltipCtrl.append(arrow, contentCtrl);
 tooltipCtrl.addEventListener('mouseover', () => (overTooltip = true));
 tooltipCtrl.addEventListener('mouseout', () => (overTooltip = false));
-// addTransitionEndListener(tooltipCtrl, () => (tooltipCtrl.style.visibility = 'hidden'));
 
 interface ContentValue {
   binder: HTMLElement;

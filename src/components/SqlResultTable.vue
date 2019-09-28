@@ -33,7 +33,7 @@ import { CreateElement } from 'vue';
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import { Row, FlatRow, Column, Section, QueryJsonL } from '@/types/billQuery';
 import { execute } from '@/utils/billQuery';
-import { offset } from '@/utils/dom';
+import { offset, closest } from '@/utils/dom';
 import { translateBody, translateHeader } from '@/utils/assist';
 import BillingCyclePicker from './BillingCyclePicker.vue';
 
@@ -61,9 +61,7 @@ export default class SqlResultTable extends Vue {
   }
 
   private handleMouseOver(ev: MouseEvent) {
-    let el = (ev.target || ev.srcElement) as HTMLElement;
-
-    while (el && el.nodeName !== 'TD') el = el.parentElement as HTMLElement;
+    const el = closest((ev.target || ev.srcElement) as HTMLElement, 'td');
 
     if (el) {
       const span = el.querySelector('.ivu-table-cell-ellipsis > span') as HTMLElement;
