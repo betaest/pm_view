@@ -3,14 +3,16 @@ function match(this: HTMLElement, el: string | HTMLElement) {
 
   return typeof el === 'string' ? proc.call(this, el) : this === el;
 }
-export default function closest(el: HTMLElement | null, selector: string | HTMLElement): HTMLElement | null {
+export default function closest(el: HTMLElement | EventTarget | null, selector: string | HTMLElement): HTMLElement | null {
   if (!el) return null;
 
-  if (typeof selector === 'string' && el.closest) return el.closest(selector);
+  let t = el as HTMLElement;
 
-  while (el) {
-    if (match.call(el, selector)) return el;
-    else el = el.parentElement!;
+  if (typeof selector === 'string' && t.closest) return t.closest(selector);
+
+  while (t) {
+    if (match.call(t, selector)) return t;
+    else t = t.parentElement!;
   }
 
   return null;

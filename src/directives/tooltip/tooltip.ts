@@ -89,18 +89,17 @@ const inserted: DirectiveFunction = (el, binding) => {
     };
 
     container.addEventListener('mouseover', e => {
-      const t = e.target || e.srcElement;
       const c = tips[containerId];
 
       overRow = true;
 
       if (c.isContainer && typeof c.content === 'object')
         for (let name in c.content) {
-          const tt = closest(t as HTMLElement, c.content[name].binder);
+          const t = closest(e.target || e.srcElement, c.content[name].binder);
 
-          if (tt && tt !== pop) {
-            showTip(tt, c.content[name].content);
-            pop = tt;
+          if (t && t !== pop) {
+            showTip(t, c.content[name].content);
+            pop = t;
 
             return;
           }

@@ -46,7 +46,7 @@ export default class SqlResultTable extends Vue {
   private body: Array<FlatRow> = [];
 
   private rowClass(row: FlatRow, index: number) {
-    return `${(row._parent === -1 || this.body[row._parent]._status) && row._status ? '' : 'invisible-row'} ${
+    return `${(row._parent === -1 || this.find(row._parent)._status) && row._status ? '' : 'invisible-row'} ${
       row._children !== 0 ? 'row-pointer' : ''
     }`;
   }
