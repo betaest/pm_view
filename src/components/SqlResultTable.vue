@@ -9,7 +9,6 @@
       :columns="header"
       :data="body"
       :height="200"
-      stripe
       size="small"
       :loading="loading"
       :row-class-name="rowClass"

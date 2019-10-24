@@ -1,6 +1,6 @@
 import './tooltip.scss';
 import { DirectiveOptions, DirectiveFunction } from 'vue';
-import { closest, offset, addTransitionEndListener } from '@/utils/dom';
+import { closest, offset } from '@/utils/dom';
 
 let overTooltip = false;
 let overRow = false;
@@ -60,42 +60,39 @@ const bind: DirectiveFunction = () =>
 
 const inserted: DirectiveFunction = (el, binding) => {
   const container =
-    (typeof binding.value === 'object' && binding.value.container ? closest(el, binding.value.container) : undefined) ||
-    el;
-  const binder =
-    (typeof binding.value === 'object' && binding.value.binder ? closest(el, binding.value.binder) : undefined) || el;
+    (typeof binding.value === 'object' && binding.value.container && closest(el, binding.value.container)) || el;
+  const binder = (typeof binding.value === 'object' && binding.value.binder && closest(el, binding.value.binder)) || el;
   const tip = typeof binding.value === 'object' ? binding.value.content : binding.value;
 
-  let containerId: number = container.$uniqueid;
-  let binderId: number = binder.$uniqueid;
   const isContainer = container !== el;
   const content: ContentValue = {
     binder,
     content: tip,
   };
 
-  if (!containerId) containerId = container.$uniqueid = controlCount++;
-  if (!binderId) binderId = binder.$uniqueid = controlCount++;
+  const cid = container.$uniqueid && (container.$uniqueid = controlCount++);
+  const bid = binder.$uniqueid && (binder.$uniqueid = controlCount++);
 
-  if (!(containerId in tips)) {
-    tips[containerId] = {
+  if (!(cid in tips)) {
+    tips[cid] = {
       isContainer,
       el: container,
       content: isContainer
         ? {
-            [binderId]: content,
+            [bid]: content,
           }
         : content.content,
     };
 
     container.addEventListener('mouseover', e => {
-      const c = tips[containerId];
+      const c = tips[cid];
+      const target = e.target || e.srcElement;
 
       overRow = true;
 
       if (c.isContainer && typeof c.content === 'object')
         for (let name in c.content) {
-          const t = closest(e.target || e.srcElement, c.content[name].binder);
+          const t = closest(target, c.content[name].binder);
 
           if (t && t !== pop) {
             showTip(t, c.content[name].content);
@@ -104,8 +101,8 @@ const inserted: DirectiveFunction = (el, binding) => {
             return;
           }
         }
-      else if (t === c.el && c.el !== pop) {
-        showTip(t as HTMLElement, c.content as string);
+      else if (target === c.el && c.el !== pop) {
+        showTip(target as HTMLElement, c.content as string);
         pop = c.el;
       }
     });
@@ -115,10 +112,9 @@ const inserted: DirectiveFunction = (el, binding) => {
   } else {
     if (!isContainer) return;
 
-    const containerTip = tips[containerId];
+    const containerTip = tips[cid];
 
-    if (typeof containerTip.content === 'object' && !(binderId in containerTip.content))
-      containerTip.content[binderId] = content;
+    if (typeof containerTip.content === 'object' && !(bid in containerTip.content)) containerTip.content[bid] = content;
   }
 };
 
