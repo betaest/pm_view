@@ -1,6 +1,6 @@
 <template>
   <Layout style="height: 100vh">
-    <Sider collapsible :collapsed-width="78" default-collapsed v-model="collapsed" v-if="$store.state.verify.success">
+    <Sider collapsible :collapsed-width="78" default-collapsed v-model="collapsed" v-if="$store.state.success">
       <Menu
         theme="dark"
         width="auto"
@@ -21,7 +21,7 @@
         </MenuItem>
       </Menu>
     </Sider>
-    <Spin fix v-if="$store.state.verify.loading">
+    <Spin fix v-if="$store.state.loading">
       <Icon type="ios-loading" size="30" class="load-icon" />
       <div>正在验证身份，请等待</div>
     </Spin>

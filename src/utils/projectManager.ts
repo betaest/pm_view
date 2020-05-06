@@ -1,6 +1,6 @@
 import axios from './axios';
 import store from '../store';
-import { ProjectUrl, AttachmentUrl } from '@/types/urls';
+import urls from '@/urls';
 import { ProjectInfoReturn, MessageResult, ProjectInfo, AttachmentInfo } from '@/types/project';
 
 function download(blob: Blob, filename: string) {
@@ -23,16 +23,14 @@ function download(blob: Blob, filename: string) {
 
 export const Attachment = {
   async download(id: number, filename: string) {
-    // await verify();
-    const response = await axios.get(`${AttachmentUrl}/${id}`, {
+    const response = await axios.get(`${urls.attachment}/${id}`, {
       responseType: 'blob',
     });
 
     download(response.data as Blob, filename);
   },
   async downloadAll(id: number, filename: string) {
-    // await verify();
-    const response = await axios.get(`${AttachmentUrl}/all/${id}`, {
+    const response = await axios.get(`${urls.attachment}/all/${id}`, {
       responseType: 'blob',
     });
 
@@ -40,9 +38,8 @@ export const Attachment = {
   },
 
   async remove(id: number) {
-    // await verify();
     try {
-      await axios.delete(`${AttachmentUrl}/${id}`);
+      await axios.delete(`${urls.attachment}/${id}`);
     } catch {
       throw new Error('删除文件出错');
     }
@@ -57,8 +54,7 @@ export const Project = {
     order: 'asc' | 'desc' | 'normal',
     keyword?: string
   ): Promise<ProjectInfoReturn> {
-    // await verify();
-    const response = await axios.get(`${ProjectUrl}/${keyword}`, {
+    const response = await axios.get(`${urls.project}/${keyword}`, {
       params: {
         page,
         pageSize,
@@ -70,14 +66,11 @@ export const Project = {
     return response.data as ProjectInfoReturn;
   },
   async delete(id: number): Promise<MessageResult> {
-    // await verify();
-    const response = await axios.delete(`${ProjectUrl}/${id}`);
+    const response = await axios.delete(`${urls.project}/${id}`);
 
     return response.data as MessageResult;
   },
   async save(info: ProjectInfo): Promise<MessageResult> {
-    // await verify();
-
     const data = new FormData();
 
     for (const name in info)
@@ -94,7 +87,7 @@ export const Project = {
     const response = await axios.request({
       method: info.id === 0 ? 'POST' : 'PUT',
       withCredentials: true,
-      url: ProjectUrl,
+      url: urls.project,
       data,
     });
 

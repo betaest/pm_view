@@ -19,7 +19,7 @@ export default new Router({
       meta: {
         reqAuth: true,
       },
-      component: () => import(/* webpackChunkName: "ProjectManager" */ './views/ProjectManager.vue'),
+      component: () => import(/* webpackChunkName: "proj" */ './views/ProjectManager.vue'),
     },
     {
       path: '/BillQuery',
@@ -27,7 +27,7 @@ export default new Router({
       meta: {
         reqAuth: false,
       },
-      component: () => import(/* webpackChunkName: "BillQuery" */ './views/BillQuery.vue'),
+      component: () => import(/* webpackChunkName: "bq" */ './views/BillQuery.vue'),
     },
   ],
 });

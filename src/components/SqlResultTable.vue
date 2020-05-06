@@ -1,79 +1,130 @@
 <template>
   <div style="margin: 20px">
-    <div style="font-weight: bolder">
-      <template v-for="(title, t) of result.title">
-        <div
-          :is="title.tag"
-          :key="t"
-          v-bind="title.props"
-          v-on="title.on"
-          :style="title.style"
-          :class="title.classNames"
-        >
-          {{ title.text }}
-        </div>
+    <div style="margin-bottom: 5px;">
+      <template v-for="(title, t) of title">
+        <div :is="title.tag" :key="t" v-bind="title.props" v-on="title.events">{{ title.text }}</div>
       </template>
     </div>
     <Table
-      :columns="result.header"
-      :data="result.body"
-      :height="250"
-      stripe
+      :columns="header"
+      :data="body"
+      :height="200"
       size="small"
       :loading="loading"
-      @on-row-click="$emit('new', { tag: 'sql-result-table' })"
-    ></Table>
+      :row-class-name="rowClass"
+      @on-row-click="rowClick"
+      @mouseover.native.stop="handleMouseOver"
+    >
+      <Row slot="footer" style="margin-left: 10px">
+        <Col span="16">
+          <span>测试footer</span>
+        </Col>
+        <Col span="8" style="float: right">
+          <Page :total="total" size="small"></Page>
+        </Col>
+      </Row>
+    </Table>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import { Result, DynamicValue, DynamicString } from '@/types/billQuery';
+import { CreateElement } from 'vue';
+import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Row, FlatRow, Column, Section, QueryJsonL } from '@/types/billQuery';
+import { execute } from '@/utils/billQuery';
+import { offset, closest } from '@/utils/dom';
+import { translateBody, translateHeader } from '@/utils/assist';
+import BillingCyclePicker from './BillingCyclePicker.vue';
 
-@Component
+@Component({ components: { BillingCyclePicker } })
 export default class SqlResultTable extends Vue {
-  private loading = false;
+  private loading = true;
+  private total = 0;
+  private title: Array<Section> = [];
+  private header: Array<Column> = [];
+  private body: Array<FlatRow> = [];
 
-  private get result(): Result {
-    const title: Array<DynamicString> = [];
-    const body = [];
+  private rowClass(row: FlatRow, index: number) {
+    return `${(row._parent === -1 || this.find(row._parent)._status) && row._status ? '' : 'invisible-row'} ${
+      row._children !== 0 ? 'row-pointer' : ''
+    }`;
+  }
 
-    for (let i = 0; i < Math.round(Math.random() * 3); ++i)
-      title.push({
-        tag: 'span',
-        text: `${new Date()} -- ${Math.round(Math.random() * 3)}`,
+  private find(offset: number): FlatRow {
+    return this.body[offset];
+  }
+
+  private rowClick(row: FlatRow, index: number) {
+    if (row.children)
+      for (let i = 1; i < row._children + 1; ++i) this.find(index + i)._status = !this.find(index + i)._status;
+  }
+
+  private handleMouseOver(ev: MouseEvent) {
+    const el = closest((ev.target || ev.srcElement) as HTMLElement, 'td');
+
+    if (el) {
+      const span = el.querySelector('.ivu-table-cell-ellipsis > span') as HTMLElement;
+      const icon = el.querySelector('.ivu-table-cell-ellipsis > .ivu-icon') as HTMLElement;
+      const pos = offset(el);
+
+      let name = el.className;
+      if (/(?:^|\s+)key-(.*)\s*$/.test(name)) name = RegExp.$1;
+
+      let left = 0;
+
+      if (icon) {
+        const iconStyle = getComputedStyle(icon);
+
+        left += icon.offsetWidth + parseInt(iconStyle.marginLeft || '0px') + parseInt(iconStyle.marginRight || '0px');
+      }
+
+      this.$store.commit('billquery/pop', {
+        name,
+        left: pos.left + Math.min(left + span.offsetWidth + 16, el.offsetWidth - 36),
+        top: pos.top + el.offsetHeight / 2 - 12,
+        value: span.textContent || span.innerText,
       });
+    }
+  }
 
-    for (let i = 0; i < Math.round(Math.random() * 100); ++i)
-      body.push({
-        serv_id: i,
-        world: Math.round(Math.random() * 100),
-      });
+  private async created() {
+    const rs = await execute(this.value);
 
-    return {
-      total: body.length,
-      title,
-      header: [
-        // { key: 'index', title: '#', type: 'index', width: 50, fixed: true },
-        { key: 'expand', title: '', type: 'expand', width: 50 },
-        {
-          key: 'serv_id',
-          title: 'serv_id',
-        },
-        {
-          key: 'world',
-          title: '世界',
-        },
-      ],
-      body,
-    };
+    this.total = rs.total;
+    this.title = rs.title;
+    this.body = translateBody(rs.body, 0);
+    this.header = translateHeader(
+      rs.header,
+      rs.body.some(b => typeof b.children !== 'undefined' && b.children.length > 0),
+      this.find
+    );
+    this.loading = false;
   }
 
   @Prop(Object)
-  private readonly value!: any;
-
-  private get Value() {
-    return JSON.stringify(this.value);
-  }
+  private readonly value!: QueryJsonL;
 }
 </script>
+<style lang="scss">
+.indent {
+  margin-right: 10px;
+}
+
+@for $index from 0 to 10 {
+  .indent-#{$index} {
+    margin-left: 20px * $index;
+  }
+}
+
+.invisible-row {
+  display: none;
+}
+
+td.has-child .ivu-table-cell {
+  padding: 0;
+}
+
+.row-pointer {
+  cursor: pointer;
+}
+</style>

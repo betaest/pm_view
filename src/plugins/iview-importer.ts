@@ -6,7 +6,7 @@ import {
   MenuItem,
   Input,
   Table,
-  Tooltip,
+  // Tooltip,
   Button,
   ButtonGroup,
   Drawer,
@@ -25,6 +25,7 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
+  DatePicker,
 } from 'iview';
 
 function install(cs: Record<string, any>) {
@@ -38,7 +39,7 @@ install({
   MenuItem,
   Input,
   Table,
-  Tooltip,
+  // Tooltip,
   Button,
   ButtonGroup,
   Drawer,
@@ -56,6 +57,7 @@ install({
   Dropdown,
   DropdownMenu,
   DropdownItem,
+  DatePicker,
 });
 
 Vue.prototype.$Notice = Notice;
